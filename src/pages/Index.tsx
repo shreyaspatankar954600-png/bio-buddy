@@ -152,11 +152,11 @@ const Index = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="name" className="text-sm font-medium">Your Name</Label>
-                <Input id="name" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} />
+                <Input id="name" placeholder="Your Name" value={name} onChange={(e) => setName(e.target.value)} />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="profession" className="text-sm font-medium">Profession / Role</Label>
-                <Input id="profession" placeholder="UX Designer" value={profession} onChange={(e) => setProfession(e.target.value)} />
+                <Input id="profession" placeholder="Profession / Role" value={profession} onChange={(e) => setProfession(e.target.value)} />
               </div>
             </div>
             <div className="space-y-1.5">
