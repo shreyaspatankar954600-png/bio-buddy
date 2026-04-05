@@ -14,12 +14,12 @@ const ApiKeyModal = ({ hasKey, onSave }: ApiKeyModalProps) => {
   const [key, setKey] = useState("");
 
   useEffect(() => {
-    const stored = localStorage.getItem("gemini_api_key");
+    const stored = localStorage.getItem("groq_api_key");
     if (stored) setKey(stored);
   }, [open]);
 
   const handleSave = () => {
-    localStorage.setItem("gemini_api_key", key.trim());
+    localStorage.setItem("groq_api_key", key.trim());
     onSave(key.trim());
     setOpen(false);
   };
@@ -36,14 +36,14 @@ const ApiKeyModal = ({ hasKey, onSave }: ApiKeyModalProps) => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Gemini API Key</DialogTitle>
+          <DialogTitle>Groq API Key</DialogTitle>
         </DialogHeader>
         <p className="text-sm text-muted-foreground">
-          Paste your Google Gemini API key below. It's stored locally in your browser and never sent to any server except Google's API.
+          Paste your Groq API key below. It's stored locally in your browser and never sent to any server except Groq's API.
         </p>
         <Input
           type="password"
-          placeholder="AIza..."
+          placeholder="gsk_..."
           value={key}
           onChange={(e) => setKey(e.target.value)}
           className="font-mono text-sm"

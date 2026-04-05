@@ -29,7 +29,7 @@ const Index = () => {
   const charLimit = platform === "instagram" ? 150 : 220;
 
   useEffect(() => {
-    const stored = localStorage.getItem("gemini_api_key");
+    const stored = localStorage.getItem("groq_api_key");
     setHasApiKey(!!stored);
   }, []);
 
@@ -56,9 +56,9 @@ const Index = () => {
   };
 
   const generate = async () => {
-    const apiKey = localStorage.getItem("gemini_api_key");
+    const apiKey = localStorage.getItem("groq_api_key");
     if (!apiKey) {
-      setError("Please add your Gemini API key first (click the ⚙️ icon).");
+      setError("Please add your Groq API key first (click the ⚙️ icon).");
       return;
     }
     if (!name.trim() || !profession.trim()) {
@@ -73,16 +73,18 @@ const Index = () => {
     const prompt = `Generate exactly 3 bio variations for ${platform} for a person named ${name} who is a ${profession}. Keywords: ${keywords || "none"}. Tone: ${tone}. Format: return only the 3 bios, numbered 1, 2, 3. For Instagram keep each under 150 characters. For LinkedIn keep each under 220 characters.`;
 
     try {
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-          }),
-        }
-      );
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "llama-3.1-8b-instant",
+          messages: [{ role: "user", content: prompt }],
+          max_tokens: 500,
+        }),
+      });
 
       if (!res.ok) {
         const errData = await res.json().catch(() => null);
@@ -90,7 +92,7 @@ const Index = () => {
       }
 
       const data = await res.json();
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      const text = data.choices?.[0]?.message?.content;
       if (!text) throw new Error("No response from the API.");
 
       const parsed = parseBios(text);
