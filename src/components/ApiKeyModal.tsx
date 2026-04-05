@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Settings } from "lucide-react";
+import { KeyRound, ExternalLink, CheckCircle2 } from "lucide-react";
 
 interface ApiKeyModalProps {
   hasKey: boolean;
@@ -27,20 +27,81 @@ const ApiKeyModal = ({ hasKey, onSave }: ApiKeyModalProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="relative p-2 rounded-lg hover:bg-secondary transition-colors" aria-label="API Settings">
-          <Settings className="w-5 h-5 text-muted-foreground" />
+        <Button
+          variant="outline"
+          size="sm"
+          className="relative gap-2 font-medium"
+          aria-label="API Key Settings"
+        >
+          <KeyRound className="w-4 h-4" />
+          <span className="hidden sm:inline">{hasKey ? "API Key Connected" : "Add API Key"}</span>
+          <span className="sm:hidden">{hasKey ? "Connected" : "API Key"}</span>
           {hasKey && (
-            <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-background" />
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
           )}
-        </button>
+        </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Groq API Key</DialogTitle>
+          <DialogTitle className="flex items-center gap-2 text-lg">
+            <KeyRound className="w-5 h-5 text-primary" />
+            Connect Your Groq API Key
+          </DialogTitle>
         </DialogHeader>
-        <p className="text-sm text-muted-foreground">
-          Paste your Groq API key below. It's stored locally in your browser and never sent to any server except Groq's API.
+
+        {/* Step-by-step guide */}
+        <div className="space-y-3 rounded-xl bg-muted/50 border border-border p-4">
+          <p className="text-sm font-semibold text-foreground">How to get your free API key:</p>
+          <ol className="space-y-2.5 text-sm text-muted-foreground list-none">
+            <li className="flex gap-2.5">
+              <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">1</span>
+              <span>
+                Go to{" "}
+                <a
+                  href="https://console.groq.com/login"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary font-medium underline underline-offset-2 hover:text-primary/80 inline-flex items-center gap-0.5"
+                >
+                  console.groq.com
+                  <ExternalLink className="w-3 h-3" />
+                </a>{" "}
+                and sign up for a free account (Google / GitHub login supported).
+              </span>
+            </li>
+            <li className="flex gap-2.5">
+              <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">2</span>
+              <span>
+                Once logged in, navigate to{" "}
+                <a
+                  href="https://console.groq.com/keys"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary font-medium underline underline-offset-2 hover:text-primary/80 inline-flex items-center gap-0.5"
+                >
+                  API Keys
+                  <ExternalLink className="w-3 h-3" />
+                </a>{" "}
+                in the left sidebar.
+              </span>
+            </li>
+            <li className="flex gap-2.5">
+              <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">3</span>
+              <span>Click <strong>"Create API Key"</strong>, give it a name (e.g. "BioGen"), and copy the generated key.</span>
+            </li>
+            <li className="flex gap-2.5">
+              <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">4</span>
+              <span>Paste the key below and hit <strong>"Save Key"</strong>. You're all set!</span>
+            </li>
+          </ol>
+        </div>
+
+        {/* Security note */}
+        <p className="text-xs text-muted-foreground flex items-start gap-1.5">
+          <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 text-emerald-500 flex-shrink-0" />
+          Your key is stored locally in your browser and never sent anywhere except Groq's API.
         </p>
+
         <Input
           type="password"
           placeholder="gsk_..."
