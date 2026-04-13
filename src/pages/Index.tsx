@@ -1,17 +1,24 @@
 import { useState, useEffect } from "react";
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2, Sparkles, Wand2, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import BioCard from "@/components/BioCard";
 import PlatformPreview from "@/components/PlatformPreview";
 import ShareButtons from "@/components/ShareButtons";
+import FloatingParticles from "@/components/FloatingParticles";
 
 type Platform = "instagram" | "linkedin";
 type Tone = "Professional" | "Casual" | "Funny" | "Inspirational";
+
+const toneEmojis: Record<Tone, string> = {
+  Professional: "💼",
+  Casual: "😎",
+  Funny: "😂",
+  Inspirational: "✨",
+};
 
 const Index = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -59,7 +66,7 @@ const Index = () => {
   const generate = async () => {
     const apiKey = localStorage.getItem("groq_api_key");
     if (!apiKey) {
-      setError("Please add your Groq API key first (click the ⚙️ icon).");
+      setError("Please add your Groq API key first (click the API Key button).");
       return;
     }
     if (!name.trim() || !profession.trim()) {
@@ -107,8 +114,19 @@ const Index = () => {
   };
 
   return (
-    <div className={`min-h-screen flex flex-col transition-colors duration-500 ${platform === "instagram" ? "gradient-instagram" : "gradient-linkedin"}`}>
-      <div className="min-h-screen flex flex-col bg-background/80 backdrop-blur-sm">
+    <div className="min-h-screen flex flex-col relative overflow-hidden">
+      {/* Animated background gradient */}
+      <div
+        className={`fixed inset-0 transition-all duration-1000 ${
+          platform === "instagram" ? "gradient-instagram" : "gradient-linkedin"
+        }`}
+        style={{ backgroundSize: "200% 200%", animation: "gradient-shift 6s ease infinite" }}
+      />
+      <div className="fixed inset-0 bg-background/85 backdrop-blur-sm" />
+
+      <FloatingParticles platform={platform} />
+
+      <div className="relative z-10 min-h-screen flex flex-col">
         <Header
           darkMode={darkMode}
           onToggleDark={() => setDarkMode((d) => !d)}
@@ -118,96 +136,184 @@ const Index = () => {
 
         <main className="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10 flex flex-col gap-8">
           {/* Hero */}
-          <div className="text-center space-y-2">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
+          <div className="animate-fade-in-up text-center space-y-3">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/10 text-accent text-xs font-semibold mb-2">
+              <Sparkles className="w-3 h-3" /> Powered by AI
+            </div>
+            <h2 className={`text-4xl sm:text-5xl font-black tracking-tight ${
+              platform === "instagram" ? "gradient-text-ig" : "gradient-text-li"
+            }`}>
               AI Bio Generator
             </h2>
-            <p className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto">
-              Create the perfect bio for Instagram or LinkedIn in seconds with AI.
+            <p className="text-muted-foreground text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
+              Create the perfect bio for <span className="font-semibold text-foreground">Instagram</span> or{" "}
+              <span className="font-semibold text-foreground">LinkedIn</span> in seconds with AI.
             </p>
           </div>
 
           {/* Platform Toggle */}
-          <div className="flex justify-center">
-            <div className="inline-flex rounded-xl bg-secondary p-1 gap-1">
+          <div className="animate-fade-in-up flex justify-center" style={{ animationDelay: "100ms" }}>
+            <div className="inline-flex rounded-2xl glass p-1.5 gap-1">
               {(["instagram", "linkedin"] as Platform[]).map((p) => (
                 <button
                   key={p}
                   onClick={() => setPlatform(p)}
-                  className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 capitalize ${
+                  className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 capitalize ${
                     platform === p
                       ? p === "instagram"
-                        ? "gradient-instagram text-primary-foreground shadow-md"
-                        : "gradient-linkedin text-primary-foreground shadow-md"
-                      : "text-muted-foreground hover:text-foreground"
+                        ? "gradient-instagram text-primary-foreground shadow-lg scale-105"
+                        : "gradient-linkedin text-primary-foreground shadow-lg scale-105"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                   }`}
                 >
-                  {p}
+                  {p === "instagram" ? "📸 Instagram" : "💼 LinkedIn"}
                 </button>
               ))}
             </div>
           </div>
 
           {/* Form */}
-          <div className="bg-card rounded-2xl p-5 sm:p-6 shadow-bio-card border border-border space-y-4">
+          <div
+            className="animate-fade-in-up glass-strong rounded-2xl p-5 sm:p-7 space-y-5"
+            style={{ animationDelay: "200ms" }}
+          >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label htmlFor="name" className="text-sm font-medium">Your Name</Label>
-                <Input id="name" placeholder="Your Name" value={name} onChange={(e) => setName(e.target.value)} />
+                <Label htmlFor="name" className="text-sm font-semibold flex items-center gap-1">
+                  👤 Your Name
+                </Label>
+                <Input
+                  id="name"
+                  placeholder="Your Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="transition-all duration-300 focus:scale-[1.01] focus:shadow-md"
+                />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="profession" className="text-sm font-medium">Profession / Role</Label>
-                <Input id="profession" placeholder="Profession / Role" value={profession} onChange={(e) => setProfession(e.target.value)} />
+                <Label htmlFor="profession" className="text-sm font-semibold flex items-center gap-1">
+                  💼 Profession / Role
+                </Label>
+                <Input
+                  id="profession"
+                  placeholder="Profession / Role"
+                  value={profession}
+                  onChange={(e) => setProfession(e.target.value)}
+                  className="transition-all duration-300 focus:scale-[1.01] focus:shadow-md"
+                />
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="keywords" className="text-sm font-medium">Keywords</Label>
-              <Input id="keywords" placeholder="photographer, travel lover, Mumbai" value={keywords} onChange={(e) => setKeywords(e.target.value)} />
+              <Label htmlFor="keywords" className="text-sm font-semibold flex items-center gap-1">
+                🏷️ Keywords
+              </Label>
+              <Input
+                id="keywords"
+                placeholder="photographer, travel lover, Mumbai"
+                value={keywords}
+                onChange={(e) => setKeywords(e.target.value)}
+                className="transition-all duration-300 focus:scale-[1.01] focus:shadow-md"
+              />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="tone" className="text-sm font-medium">Tone</Label>
+              <Label htmlFor="tone" className="text-sm font-semibold flex items-center gap-1">
+                🎭 Tone
+              </Label>
               <Select value={tone} onValueChange={(v) => setTone(v as Tone)}>
-                <SelectTrigger>
+                <SelectTrigger className="transition-all duration-300 focus:scale-[1.01]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {(["Professional", "Casual", "Funny", "Inspirational"] as Tone[]).map((t) => (
-                    <SelectItem key={t} value={t}>{t}</SelectItem>
+                    <SelectItem key={t} value={t}>
+                      {toneEmojis[t]} {t}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
-            {error && <p className="text-sm text-destructive font-medium">{error}</p>}
+            {error && (
+              <div className="animate-fade-in-up text-sm text-destructive font-medium bg-destructive/10 px-4 py-2.5 rounded-xl border border-destructive/20">
+                {error}
+              </div>
+            )}
 
             <Button
               onClick={generate}
               disabled={loading}
               variant={platform === "instagram" ? "generate" : "generate-linkedin"}
               size="lg"
-              className="w-full"
+              className="w-full text-base font-bold py-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]"
             >
               {loading ? (
-                <><Loader2 className="w-4 h-4 animate-spin" /> Generating...</>
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span className="ml-2">Crafting your bios...</span>
+                </>
               ) : (
-                <><Sparkles className="w-4 h-4" /> Generate Bio</>
+                <>
+                  <Wand2 className="w-5 h-5" />
+                  <span className="ml-2">Generate Bio</span>
+                  <Sparkles className="w-4 h-4 ml-1 animate-bounce-subtle" />
+                </>
               )}
             </Button>
           </div>
 
+          {/* Loading skeleton */}
+          {loading && (
+            <div className="space-y-4 animate-fade-in">
+              <div className="flex justify-center">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="w-2 h-2 rounded-full bg-accent animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <div className="w-2 h-2 rounded-full bg-accent animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <div className="w-2 h-2 rounded-full bg-accent animate-bounce" style={{ animationDelay: "300ms" }} />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="rounded-2xl border border-border/50 overflow-hidden">
+                    <div className="shimmer h-[340px]" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Results */}
-          {bios.length > 0 && (
+          {bios.length > 0 && !loading && (
             <div className="space-y-8">
-              <h3 className="text-xl font-bold text-foreground text-center">
-                Preview how your bio looks on {platform === "instagram" ? "Instagram" : "LinkedIn"}
-              </h3>
+              <div className="animate-fade-in-up text-center space-y-2">
+                <h3 className={`text-2xl font-bold ${
+                  platform === "instagram" ? "gradient-text-ig" : "gradient-text-li"
+                }`}>
+                  Your Bios Are Ready! 🎉
+                </h3>
+                <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
+                  See how they look on {platform === "instagram" ? "Instagram" : "LinkedIn"}
+                  <ArrowDown className="w-3.5 h-3.5 animate-bounce-subtle" />
+                </p>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {bios.map((bio, i) => (
-                  <div key={i} className="space-y-2">
-                    <span className={`block text-center text-xs font-semibold uppercase tracking-wider ${platform === "instagram" ? "text-accent" : "text-primary"}`}>
+                  <div
+                    key={i}
+                    className="animate-fade-in-up space-y-2"
+                    style={{ animationDelay: `${i * 150}ms` }}
+                  >
+                    <span className={`block text-center text-xs font-bold uppercase tracking-wider ${
+                      platform === "instagram" ? "text-accent" : "text-primary"
+                    }`}>
                       Option {i + 1}
                     </span>
-                    <PlatformPreview bio={bio} name={name} profession={profession} platform={platform} />
+                    <PlatformPreview
+                      bio={bio}
+                      name={name}
+                      profession={profession}
+                      platform={platform}
+                      delay={i * 150}
+                    />
                   </div>
                 ))}
               </div>
@@ -216,8 +322,8 @@ const Index = () => {
           )}
 
           {/* Ad Placeholder */}
-          <div className="rounded-xl border-2 border-dashed border-border bg-muted/50 p-6 text-center">
-            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Advertisement</p>
+          <div className="animate-fade-in rounded-2xl border-2 border-dashed border-border/50 bg-muted/30 p-8 text-center backdrop-blur-sm">
+            <p className="text-xs text-muted-foreground/60 font-medium uppercase tracking-widest">Advertisement</p>
           </div>
         </main>
 
