@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BioCard from "@/components/BioCard";
+import PlatformPreview from "@/components/PlatformPreview";
 import ShareButtons from "@/components/ShareButtons";
 
 type Platform = "instagram" | "linkedin";
@@ -196,10 +197,18 @@ const Index = () => {
 
           {/* Results */}
           {bios.length > 0 && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-8">
+              <h3 className="text-xl font-bold text-foreground text-center">
+                Preview how your bio looks on {platform === "instagram" ? "Instagram" : "LinkedIn"}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {bios.map((bio, i) => (
-                  <BioCard key={i} bio={bio} index={i} charLimit={charLimit} platform={platform} />
+                  <div key={i} className="space-y-2">
+                    <span className={`block text-center text-xs font-semibold uppercase tracking-wider ${platform === "instagram" ? "text-accent" : "text-primary"}`}>
+                      Option {i + 1}
+                    </span>
+                    <PlatformPreview bio={bio} name={name} profession={profession} platform={platform} />
+                  </div>
                 ))}
               </div>
               <ShareButtons />
