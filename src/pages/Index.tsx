@@ -276,7 +276,7 @@ const Index = () => {
                   <div className="w-2 h-2 rounded-full bg-accent animate-bounce" style={{ animationDelay: "300ms" }} />
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-4">
                 {[0, 1, 2].map((i) => (
                   <div key={i} className="rounded-2xl border border-border/50 overflow-hidden">
                     <div className="shimmer h-[340px]" />
@@ -300,7 +300,7 @@ const Index = () => {
                   <ArrowDown className="w-3.5 h-3.5 animate-bounce-subtle" />
                 </p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-4">
                 {bios.map((bio, i) => (
                   <div
                     key={i}

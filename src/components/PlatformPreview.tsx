@@ -24,7 +24,7 @@ const PlatformPreview = ({ bio, name, profession, platform, delay = 0 }: Platfor
   if (platform === "instagram") {
     return (
       <div
-        className="w-full max-w-[280px] mx-auto group"
+        className="w-full max-w-[280px] sm:max-w-[280px] mx-auto group"
         style={{ animationDelay: `${delay}ms` }}
       >
         {/* Phone frame - clean white like real IG */}
@@ -145,7 +145,7 @@ const PlatformPreview = ({ bio, name, profession, platform, delay = 0 }: Platfor
   // LinkedIn preview - matches reference: banner, round avatar overlapping, name + headline + location + connections, then buttons, then About
   return (
     <div
-      className="w-full max-w-[340px] mx-auto group"
+      className="w-full max-w-[340px] sm:max-w-[340px] mx-auto group"
       style={{ animationDelay: `${delay}ms` }}
     >
       <div className="rounded-2xl border border-border/50 bg-card overflow-hidden shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-1.5 hover:glow-linkedin">
