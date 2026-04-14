@@ -11,13 +11,14 @@ import ShareButtons from "@/components/ShareButtons";
 import FloatingParticles from "@/components/FloatingParticles";
 
 type Platform = "instagram" | "linkedin";
-type Tone = "Professional" | "Casual" | "Funny" | "Inspirational";
+type Tone = "Professional" | "Casual" | "Funny" | "Inspirational" | "Gen Z";
 
 const toneEmojis: Record<Tone, string> = {
   Professional: "💼",
   Casual: "😎",
   Funny: "😂",
   Inspirational: "✨",
+  "Gen Z": "💅",
 };
 
 const Index = () => {
@@ -78,7 +79,11 @@ const Index = () => {
     setError("");
     setBios([]);
 
-    const prompt = `Generate exactly 3 bio variations for ${platform} for a person named ${name} who is a ${profession}. Keywords: ${keywords || "none"}. Tone: ${tone}. Format: return only the 3 bios, numbered 1, 2, 3. For Instagram keep each under 150 characters. For LinkedIn keep each under 220 characters.`;
+    const toneInstruction = tone === "Gen Z"
+      ? "Tone: Gen Z — use Gen Z slang, internet lingo, and trendy words like 'slay', 'no cap', 'lowkey', 'vibe check', 'it's giving', 'bestie', 'main character energy', 'ate and left no crumbs', 'understood the assignment', 'periodt', 'based', 'living rent free'. Make it sound like a trendy Gen Z person wrote it."
+      : `Tone: ${tone}.`;
+
+    const prompt = `Generate exactly 3 bio variations for ${platform} for a person named ${name} who is a ${profession}. Keywords: ${keywords || "none"}. ${toneInstruction} Format: return only the 3 bios, numbered 1, 2, 3. For Instagram keep each under 150 characters. For LinkedIn keep each under 220 characters.`;
 
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -224,7 +229,7 @@ const Index = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {(["Professional", "Casual", "Funny", "Inspirational"] as Tone[]).map((t) => (
+                  {(["Professional", "Casual", "Funny", "Inspirational", "Gen Z"] as Tone[]).map((t) => (
                     <SelectItem key={t} value={t}>
                       {toneEmojis[t]} {t}
                     </SelectItem>
