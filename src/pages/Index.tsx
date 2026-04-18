@@ -1,16 +1,20 @@
 import { useState, useEffect } from "react";
-import { Loader2, Sparkles, Wand2, ArrowDown } from "lucide-react";
+import { Loader2, Sparkles, Wand2, ArrowDown, FileText, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PlatformPreview from "@/components/PlatformPreview";
 import ShareButtons from "@/components/ShareButtons";
 import FloatingParticles from "@/components/FloatingParticles";
+import PhotoCaptionGenerator from "@/components/PhotoCaptionGenerator";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type Platform = "instagram" | "linkedin";
+type Mode = "bio" | "caption";
 type Tone = "Professional" | "Casual" | "Funny" | "Inspirational" | "Gen Z";
 
 const toneEmojis: Record<Tone, string> = {
@@ -24,6 +28,8 @@ const toneEmojis: Record<Tone, string> = {
 const Index = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [hasApiKey, setHasApiKey] = useState(false);
+  const [mode, setMode] = useState<Mode>("bio");
+  const isMobile = useIsMobile();
 
   const [name, setName] = useState("");
   const [profession, setProfession] = useState("");
@@ -140,6 +146,38 @@ const Index = () => {
         />
 
         <main className="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10 flex flex-col gap-8">
+          {/* Mode Toggle */}
+          <div className="animate-fade-in-down flex justify-center">
+            <div className="inline-flex rounded-2xl glass-strong p-1.5 gap-1 shadow-md">
+              <button
+                onClick={() => setMode("bio")}
+                className={`px-4 sm:px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${
+                  mode === "bio"
+                    ? "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white shadow-lg scale-105"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                }`}
+              >
+                <FileText className="w-4 h-4" />
+                Bio Generator
+              </button>
+              <button
+                onClick={() => setMode("caption")}
+                className={`px-4 sm:px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${
+                  mode === "caption"
+                    ? "bg-gradient-to-r from-purple-600 to-fuchsia-500 text-white shadow-lg scale-105"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                }`}
+              >
+                <Camera className="w-4 h-4" />
+                Photo Caption
+              </button>
+            </div>
+          </div>
+
+          {mode === "caption" ? (
+            <PhotoCaptionGenerator />
+          ) : (
+          <>
           {/* Hero */}
           <div className="animate-fade-in-up text-center space-y-3">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/10 text-accent text-xs font-semibold mb-2">
@@ -300,30 +338,58 @@ const Index = () => {
                   <ArrowDown className="w-3.5 h-3.5 animate-bounce-subtle" />
                 </p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-4">
-                {bios.map((bio, i) => (
-                  <div
-                    key={i}
-                    className="animate-fade-in-up space-y-2"
-                    style={{ animationDelay: `${i * 150}ms` }}
-                  >
-                    <span className={`block text-center text-xs font-bold uppercase tracking-wider ${
-                      platform === "instagram" ? "text-accent" : "text-primary"
-                    }`}>
-                      Option {i + 1}
-                    </span>
-                    <PlatformPreview
-                      bio={bio}
-                      name={name}
-                      profession={profession}
-                      platform={platform}
-                      delay={i * 150}
-                    />
-                  </div>
-                ))}
-              </div>
+              {isMobile ? (
+                <Carousel opts={{ align: "center", loop: false }} className="w-full">
+                  <CarouselContent className="-ml-2">
+                    {bios.map((bio, i) => (
+                      <CarouselItem key={i} className="pl-2 basis-[88%]">
+                        <div className="space-y-2 py-2">
+                          <span className={`block text-center text-xs font-bold uppercase tracking-wider ${
+                            platform === "instagram" ? "text-accent" : "text-primary"
+                          }`}>
+                            Option {i + 1} of {bios.length}
+                          </span>
+                          <PlatformPreview
+                            bio={bio}
+                            name={name}
+                            profession={profession}
+                            platform={platform}
+                            delay={i * 100}
+                          />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <p className="text-center text-xs text-muted-foreground mt-3">← Swipe to see all bios →</p>
+                </Carousel>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-4">
+                  {bios.map((bio, i) => (
+                    <div
+                      key={i}
+                      className="animate-fade-in-up space-y-2"
+                      style={{ animationDelay: `${i * 150}ms` }}
+                    >
+                      <span className={`block text-center text-xs font-bold uppercase tracking-wider ${
+                        platform === "instagram" ? "text-accent" : "text-primary"
+                      }`}>
+                        Option {i + 1}
+                      </span>
+                      <PlatformPreview
+                        bio={bio}
+                        name={name}
+                        profession={profession}
+                        platform={platform}
+                        delay={i * 150}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
               <ShareButtons />
             </div>
+          )}
+          </>
           )}
 
           {/* Ad Placeholder */}
