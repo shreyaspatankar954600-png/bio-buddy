@@ -338,30 +338,58 @@ const Index = () => {
                   <ArrowDown className="w-3.5 h-3.5 animate-bounce-subtle" />
                 </p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-4">
-                {bios.map((bio, i) => (
-                  <div
-                    key={i}
-                    className="animate-fade-in-up space-y-2"
-                    style={{ animationDelay: `${i * 150}ms` }}
-                  >
-                    <span className={`block text-center text-xs font-bold uppercase tracking-wider ${
-                      platform === "instagram" ? "text-accent" : "text-primary"
-                    }`}>
-                      Option {i + 1}
-                    </span>
-                    <PlatformPreview
-                      bio={bio}
-                      name={name}
-                      profession={profession}
-                      platform={platform}
-                      delay={i * 150}
-                    />
-                  </div>
-                ))}
-              </div>
+              {isMobile ? (
+                <Carousel opts={{ align: "center", loop: false }} className="w-full">
+                  <CarouselContent className="-ml-2">
+                    {bios.map((bio, i) => (
+                      <CarouselItem key={i} className="pl-2 basis-[88%]">
+                        <div className="space-y-2 py-2">
+                          <span className={`block text-center text-xs font-bold uppercase tracking-wider ${
+                            platform === "instagram" ? "text-accent" : "text-primary"
+                          }`}>
+                            Option {i + 1} of {bios.length}
+                          </span>
+                          <PlatformPreview
+                            bio={bio}
+                            name={name}
+                            profession={profession}
+                            platform={platform}
+                            delay={i * 100}
+                          />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <p className="text-center text-xs text-muted-foreground mt-3">← Swipe to see all bios →</p>
+                </Carousel>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-4">
+                  {bios.map((bio, i) => (
+                    <div
+                      key={i}
+                      className="animate-fade-in-up space-y-2"
+                      style={{ animationDelay: `${i * 150}ms` }}
+                    >
+                      <span className={`block text-center text-xs font-bold uppercase tracking-wider ${
+                        platform === "instagram" ? "text-accent" : "text-primary"
+                      }`}>
+                        Option {i + 1}
+                      </span>
+                      <PlatformPreview
+                        bio={bio}
+                        name={name}
+                        profession={profession}
+                        platform={platform}
+                        delay={i * 150}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
               <ShareButtons />
             </div>
+          )}
+          </>
           )}
 
           {/* Ad Placeholder */}
