@@ -4,6 +4,33 @@ import { Button } from "@/components/ui/button";
 import CaptionCard from "./CaptionCard";
 
 type CaptionPlatform = "instagram" | "linkedin";
+type CaptionTone = "Witty" | "Inspirational" | "Bold" | "Gen Z" | "Heartfelt" | "Minimal";
+
+const TONES: { value: CaptionTone; emoji: string; hint: string }[] = [
+  { value: "Witty", emoji: "😏", hint: "clever wordplay & humor" },
+  { value: "Inspirational", emoji: "✨", hint: "uplifting & motivational" },
+  { value: "Bold", emoji: "🔥", hint: "confident & punchy" },
+  { value: "Gen Z", emoji: "💅", hint: "slang & internet lingo" },
+  { value: "Heartfelt", emoji: "💛", hint: "warm & emotional" },
+  { value: "Minimal", emoji: "🤍", hint: "short & understated" },
+];
+
+const toneInstruction = (tone: CaptionTone): string => {
+  switch (tone) {
+    case "Witty":
+      return "Voice: WITTY — use clever wordplay, double meanings, light humor and a punchline. Avoid being corny.";
+    case "Inspirational":
+      return "Voice: INSPIRATIONAL — uplifting, motivational, evocative imagery, end on a forward-looking note.";
+    case "Bold":
+      return "Voice: BOLD — confident, punchy, declarative sentences, no hedging, strong verbs.";
+    case "Gen Z":
+      return "Voice: GEN Z — use Gen Z slang and internet lingo like 'slay', 'no cap', 'lowkey', 'it's giving', 'main character energy', 'ate and left no crumbs', 'understood the assignment', 'periodt'. Sound like a trendy Gen Z person — playful, ironic, very online.";
+    case "Heartfelt":
+      return "Voice: HEARTFELT — warm, emotional, sincere, gentle, gratitude-tinged.";
+    case "Minimal":
+      return "Voice: MINIMAL — short, understated, lowercase where natural, max 1 emoji, no filler.";
+  }
+};
 
 interface InstagramResult {
   witty: string;
@@ -29,6 +56,7 @@ const PhotoCaptionGenerator = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [platform, setPlatform] = useState<CaptionPlatform>("instagram");
+  const [tone, setTone] = useState<CaptionTone>("Witty");
   const [igResult, setIgResult] = useState<InstagramResult | null>(null);
   const [liResult, setLiResult] = useState<LinkedInResult | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
