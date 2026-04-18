@@ -3,11 +3,22 @@ import { Loader2, Upload, Sparkles, Wand2, ImageIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CaptionCard from "./CaptionCard";
 
-interface CaptionResult {
+type CaptionPlatform = "instagram" | "linkedin";
+
+interface InstagramResult {
   witty: string;
   professional: string;
   casual: string;
-  linkedin_post: string;
+  hashtags: string;
+  tags: string;
+  alt_text: string;
+}
+
+interface LinkedInResult {
+  professional_post: string;
+  storytelling_post: string;
+  short_post: string;
+  hashtags: string;
   tags: string;
   alt_text: string;
 }
@@ -17,7 +28,9 @@ const PhotoCaptionGenerator = () => {
   const [imageName, setImageName] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [result, setResult] = useState<CaptionResult | null>(null);
+  const [platform, setPlatform] = useState<CaptionPlatform>("instagram");
+  const [igResult, setIgResult] = useState<InstagramResult | null>(null);
+  const [liResult, setLiResult] = useState<LinkedInResult | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = (file: File) => {
@@ -30,7 +43,8 @@ const PhotoCaptionGenerator = () => {
       return;
     }
     setError("");
-    setResult(null);
+    setIgResult(null);
+    setLiResult(null);
     setImageName(file.name);
     const reader = new FileReader();
     reader.onload = (e) => setImageData(e.target?.result as string);
@@ -51,8 +65,17 @@ const PhotoCaptionGenerator = () => {
   const clearImage = () => {
     setImageData(null);
     setImageName("");
-    setResult(null);
+    setIgResult(null);
+    setLiResult(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const switchPlatform = (p: CaptionPlatform) => {
+    setPlatform(p);
+    // clear results when switching so the user re-generates for that platform
+    setIgResult(null);
+    setLiResult(null);
+    setError("");
   };
 
   const generate = async () => {
@@ -68,17 +91,30 @@ const PhotoCaptionGenerator = () => {
 
     setLoading(true);
     setError("");
-    setResult(null);
+    setIgResult(null);
+    setLiResult(null);
 
-    const systemPrompt = `You are an expert social media copywriter and personal-branding assistant. Analyze the provided image carefully (note: people, objects, setting, mood, achievements, certificates, brands, locations). Respond ONLY with valid JSON, no markdown, no commentary. Use this exact schema:
+    const instagramPrompt = `You are an expert Instagram copywriter. Analyze the provided image carefully (people, mood, setting, objects, colors, vibe). Respond ONLY with valid JSON, no markdown, no commentary. Use this EXACT schema:
 {
-  "witty": "a clever, humorous caption with light wordplay (1-2 sentences, with 2-3 emojis)",
-  "professional": "a polished, brand-safe caption suitable for portfolios (1-2 sentences)",
-  "casual": "a relaxed, friendly caption like a real person posting to friends (1-2 sentences with emojis)",
-  "linkedin_post": "a full LinkedIn post (4-7 short paragraphs, hook + story + lesson + CTA, with line breaks as \\n\\n, professional tone, includes 3-5 relevant hashtags at the end)",
-  "tags": "comma-separated suggestions of who/what to tag (people roles, organizations, brands, locations visible) — start each with @ if it looks like a handle, or describe (e.g. '@yourcompany, your manager, the event organizer, @microsoft')",
-  "alt_text": "a concise, descriptive alt text for accessibility describing exactly what is in the image (1-2 sentences, no emojis)"
+  "witty": "a clever, punchy Instagram caption with wordplay (max 150 chars, 2-3 emojis)",
+  "professional": "a polished Instagram caption suitable for a creator/brand page (max 150 chars, 1-2 emojis)",
+  "casual": "a relaxed, friendly Instagram caption like a real person posting to friends (max 150 chars, with emojis)",
+  "hashtags": "20-25 highly relevant Instagram hashtags space-separated, mix of niche + popular, all starting with #",
+  "tags": "comma-separated suggestions of who/what to tag on Instagram (people, brands, locations visible). Use @handle format where it looks like one (e.g. '@nike, your friend, @mumbai')",
+  "alt_text": "a concise descriptive alt text for accessibility (1-2 sentences, no emojis)"
 }`;
+
+    const linkedinPrompt = `You are an expert LinkedIn personal-branding copywriter. Analyze the provided image carefully (note achievements, certificates, events, people, brands, settings). Respond ONLY with valid JSON, no markdown, no commentary. Use this EXACT schema:
+{
+  "professional_post": "a polished LinkedIn post (4-6 short paragraphs separated by \\n\\n, hook + context + insight + CTA, professional tone)",
+  "storytelling_post": "a narrative-style LinkedIn post (5-7 short paragraphs separated by \\n\\n, personal story arc, emotional hook, lessons learned, ends with reflective question)",
+  "short_post": "a concise punchy LinkedIn post (2-3 short paragraphs separated by \\n\\n, hook + key takeaway + CTA)",
+  "hashtags": "8-12 relevant professional LinkedIn hashtags space-separated, all starting with #",
+  "tags": "comma-separated suggestions of who/what to tag on LinkedIn (companies, mentors, organizations, event hosts visible). Use @handle format where it looks like one (e.g. '@Microsoft, your manager, the event organizer')",
+  "alt_text": "a concise descriptive alt text for accessibility (1-2 sentences, no emojis)"
+}`;
+
+    const systemPrompt = platform === "instagram" ? instagramPrompt : linkedinPrompt;
 
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -98,8 +134,8 @@ const PhotoCaptionGenerator = () => {
               ],
             },
           ],
-          temperature: 0.8,
-          max_tokens: 1200,
+          temperature: 0.85,
+          max_tokens: 1500,
           response_format: { type: "json_object" },
         }),
       });
@@ -113,7 +149,7 @@ const PhotoCaptionGenerator = () => {
       const text = data.choices?.[0]?.message?.content;
       if (!text) throw new Error("No response from the API.");
 
-      let parsed: CaptionResult;
+      let parsed: any;
       try {
         parsed = JSON.parse(text);
       } catch {
@@ -122,7 +158,8 @@ const PhotoCaptionGenerator = () => {
         parsed = JSON.parse(match[0]);
       }
 
-      setResult(parsed);
+      if (platform === "instagram") setIgResult(parsed as InstagramResult);
+      else setLiResult(parsed as LinkedInResult);
     } catch (err: any) {
       setError(err.message || "Something went wrong.");
     } finally {
@@ -130,20 +167,55 @@ const PhotoCaptionGenerator = () => {
     }
   };
 
+  const isInstagram = platform === "instagram";
+  const gradient = isInstagram
+    ? "from-pink-500 via-fuchsia-500 to-purple-600"
+    : "from-sky-600 via-blue-600 to-indigo-700";
+  const accentBg = isInstagram ? "bg-pink-500/10 text-pink-600 dark:text-pink-400" : "bg-blue-500/10 text-blue-600 dark:text-blue-400";
+  const dashedBorder = isInstagram ? "border-fuchsia-300 dark:border-fuchsia-700 hover:border-fuchsia-500 hover:bg-fuchsia-500/5" : "border-blue-300 dark:border-blue-700 hover:border-blue-500 hover:bg-blue-500/5";
+  const uploadIconBg = isInstagram ? "from-pink-500 to-fuchsia-500" : "from-sky-500 to-blue-600";
+
   return (
     <div className="space-y-8">
       {/* Hero */}
       <div className="animate-fade-in-up text-center space-y-3">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 text-xs font-semibold mb-2">
+        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold mb-2 ${accentBg}`}>
           <Sparkles className="w-3 h-3" /> AI Vision Powered
         </div>
-        <h2 className="text-4xl sm:text-5xl font-black tracking-tight bg-gradient-to-r from-purple-600 via-fuchsia-500 to-purple-600 bg-clip-text text-transparent">
+        <h2 className={`text-4xl sm:text-5xl font-black tracking-tight bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
           AI Photo Caption Generator
         </h2>
         <p className="text-muted-foreground text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
-          Upload any photo or certificate. Get <span className="font-semibold text-foreground">3 captions</span>, a{" "}
-          <span className="font-semibold text-foreground">LinkedIn post</span>, tag suggestions and alt text — instantly.
+          Upload any photo or certificate. Get tailored captions for{" "}
+          <span className="font-semibold text-foreground">Instagram</span> or{" "}
+          <span className="font-semibold text-foreground">LinkedIn</span> in seconds.
         </p>
+      </div>
+
+      {/* Platform Toggle */}
+      <div className="animate-fade-in-up flex justify-center" style={{ animationDelay: "100ms" }}>
+        <div className="inline-flex rounded-2xl glass p-1.5 gap-1">
+          <button
+            onClick={() => switchPlatform("instagram")}
+            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
+              isInstagram
+                ? "bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white shadow-lg scale-105"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+            }`}
+          >
+            📸 Instagram
+          </button>
+          <button
+            onClick={() => switchPlatform("linkedin")}
+            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
+              !isInstagram
+                ? "bg-gradient-to-r from-sky-600 to-blue-700 text-white shadow-lg scale-105"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+            }`}
+          >
+            💼 LinkedIn
+          </button>
+        </div>
       </div>
 
       {/* Upload */}
@@ -152,7 +224,7 @@ const PhotoCaptionGenerator = () => {
           <label
             onDrop={onDrop}
             onDragOver={(e) => e.preventDefault()}
-            className="relative flex flex-col items-center justify-center gap-3 border-2 border-dashed border-purple-300 dark:border-purple-700 rounded-2xl p-8 sm:p-12 cursor-pointer hover:border-purple-500 hover:bg-purple-500/5 transition-all duration-300 group"
+            className={`relative flex flex-col items-center justify-center gap-3 border-2 border-dashed rounded-2xl p-8 sm:p-12 cursor-pointer transition-all duration-300 group ${dashedBorder}`}
           >
             <input
               ref={fileInputRef}
@@ -161,7 +233,7 @@ const PhotoCaptionGenerator = () => {
               onChange={onFileChange}
               className="hidden"
             />
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-fuchsia-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+            <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${uploadIconBg} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
               <Upload className="w-7 h-7 text-white" />
             </div>
             <div className="text-center space-y-1">
@@ -196,7 +268,7 @@ const PhotoCaptionGenerator = () => {
           onClick={generate}
           disabled={loading || !imageData}
           size="lg"
-          className="w-full text-base font-bold py-6 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+          className={`w-full text-base font-bold py-6 bg-gradient-to-r ${gradient} text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300`}
         >
           {loading ? (
             <>
@@ -206,7 +278,7 @@ const PhotoCaptionGenerator = () => {
           ) : (
             <>
               <Wand2 className="w-5 h-5" />
-              <span className="ml-2">Generate Captions</span>
+              <span className="ml-2">Generate {isInstagram ? "Instagram Captions" : "LinkedIn Posts"}</span>
               <Sparkles className="w-4 h-4 ml-1 animate-bounce-subtle" />
             </>
           )}
@@ -224,20 +296,70 @@ const PhotoCaptionGenerator = () => {
         </div>
       )}
 
-      {/* Results */}
-      {result && !loading && (
+      {/* Instagram Results */}
+      {isInstagram && igResult && !loading && (
         <div className="space-y-6">
           <div className="animate-fade-in-up text-center space-y-1">
-            <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-fuchsia-600 bg-clip-text text-transparent">
-              Your Captions Are Ready! 🎉
+            <h3 className={`text-2xl font-bold bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
+              Your Instagram Captions Are Ready! 🎉
             </h3>
             <p className="text-sm text-muted-foreground">Tap any card to copy</p>
           </div>
 
           <div className="space-y-3">
-            <CaptionCard label="Witty" emoji="😏" content={result.witty} accent="pink" delay={0} />
-            <CaptionCard label="Professional" emoji="💼" content={result.professional} accent="blue" delay={80} />
-            <CaptionCard label="Casual" emoji="😎" content={result.casual} accent="amber" delay={160} />
+            <CaptionCard label="Witty" emoji="😏" content={igResult.witty} accent="pink" delay={0} />
+            <CaptionCard label="Professional" emoji="💼" content={igResult.professional} accent="purple" delay={80} />
+            <CaptionCard label="Casual" emoji="😎" content={igResult.casual} accent="amber" delay={160} />
+          </div>
+
+          <div className="space-y-1 pt-2">
+            <h4 className="text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              ✨ Instagram Toolkit
+            </h4>
+          </div>
+          <div className="space-y-3">
+            <CaptionCard label="Hashtags" emoji="#️⃣" content={igResult.hashtags} accent="pink" multiline delay={240} />
+            <CaptionCard label="Whom To Tag" emoji="🏷️" content={igResult.tags} accent="purple" delay={320} />
+            <CaptionCard label="Image Alt Text" emoji="♿" content={igResult.alt_text} accent="emerald" delay={400} />
+          </div>
+        </div>
+      )}
+
+      {/* LinkedIn Results */}
+      {!isInstagram && liResult && !loading && (
+        <div className="space-y-6">
+          <div className="animate-fade-in-up text-center space-y-1">
+            <h3 className={`text-2xl font-bold bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
+              Your LinkedIn Posts Are Ready! 🎉
+            </h3>
+            <p className="text-sm text-muted-foreground">Tap any card to copy</p>
+          </div>
+
+          <div className="space-y-3">
+            <CaptionCard
+              label="Professional Post"
+              emoji="💼"
+              content={liResult.professional_post}
+              accent="blue"
+              multiline
+              delay={0}
+            />
+            <CaptionCard
+              label="Storytelling Post"
+              emoji="📖"
+              content={liResult.storytelling_post}
+              accent="purple"
+              multiline
+              delay={80}
+            />
+            <CaptionCard
+              label="Short Post"
+              emoji="⚡"
+              content={liResult.short_post}
+              accent="amber"
+              multiline
+              delay={160}
+            />
           </div>
 
           <div className="space-y-1 pt-2">
@@ -246,16 +368,9 @@ const PhotoCaptionGenerator = () => {
             </h4>
           </div>
           <div className="space-y-3">
-            <CaptionCard
-              label="LinkedIn Post"
-              emoji="💼"
-              content={result.linkedin_post}
-              accent="blue"
-              multiline
-              delay={240}
-            />
-            <CaptionCard label="Whom To Tag" emoji="🏷️" content={result.tags} accent="purple" delay={320} />
-            <CaptionCard label="Image Alt Text" emoji="♿" content={result.alt_text} accent="emerald" delay={400} />
+            <CaptionCard label="Hashtags" emoji="#️⃣" content={liResult.hashtags} accent="blue" multiline delay={240} />
+            <CaptionCard label="Whom To Tag" emoji="🏷️" content={liResult.tags} accent="purple" delay={320} />
+            <CaptionCard label="Image Alt Text" emoji="♿" content={liResult.alt_text} accent="emerald" delay={400} />
           </div>
         </div>
       )}
