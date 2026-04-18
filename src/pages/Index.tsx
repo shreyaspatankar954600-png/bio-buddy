@@ -146,6 +146,38 @@ const Index = () => {
         />
 
         <main className="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10 flex flex-col gap-8">
+          {/* Mode Toggle */}
+          <div className="animate-fade-in-down flex justify-center">
+            <div className="inline-flex rounded-2xl glass-strong p-1.5 gap-1 shadow-md">
+              <button
+                onClick={() => setMode("bio")}
+                className={`px-4 sm:px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${
+                  mode === "bio"
+                    ? "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white shadow-lg scale-105"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                }`}
+              >
+                <FileText className="w-4 h-4" />
+                Bio Generator
+              </button>
+              <button
+                onClick={() => setMode("caption")}
+                className={`px-4 sm:px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${
+                  mode === "caption"
+                    ? "bg-gradient-to-r from-purple-600 to-fuchsia-500 text-white shadow-lg scale-105"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                }`}
+              >
+                <Camera className="w-4 h-4" />
+                Photo Caption
+              </button>
+            </div>
+          </div>
+
+          {mode === "caption" ? (
+            <PhotoCaptionGenerator />
+          ) : (
+          <>
           {/* Hero */}
           <div className="animate-fade-in-up text-center space-y-3">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/10 text-accent text-xs font-semibold mb-2">
