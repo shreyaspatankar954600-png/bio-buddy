@@ -243,6 +243,8 @@ const PhotoCaptionGenerator = () => {
             }`}
           >
             💼 LinkedIn
+          </button>
+        </div>
       </div>
 
       {/* Tone Selector */}
