@@ -142,7 +142,8 @@ const PhotoCaptionGenerator = () => {
   "alt_text": "a concise descriptive alt text for accessibility (1-2 sentences, no emojis)"
 }`;
 
-    const systemPrompt = platform === "instagram" ? instagramPrompt : linkedinPrompt;
+    const baseSystemPrompt = platform === "instagram" ? instagramPrompt : linkedinPrompt;
+    const systemPrompt = `${baseSystemPrompt}\n\n${toneInstruction(tone)}\nApply this voice consistently to EVERY text field in the JSON (captions/posts). Do NOT change the JSON keys or schema.`;
 
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
