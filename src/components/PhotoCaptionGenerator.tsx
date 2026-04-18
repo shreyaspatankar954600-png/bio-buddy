@@ -4,6 +4,33 @@ import { Button } from "@/components/ui/button";
 import CaptionCard from "./CaptionCard";
 
 type CaptionPlatform = "instagram" | "linkedin";
+type CaptionTone = "Witty" | "Inspirational" | "Bold" | "Gen Z" | "Heartfelt" | "Minimal";
+
+const TONES: { value: CaptionTone; emoji: string; hint: string }[] = [
+  { value: "Witty", emoji: "😏", hint: "clever wordplay & humor" },
+  { value: "Inspirational", emoji: "✨", hint: "uplifting & motivational" },
+  { value: "Bold", emoji: "🔥", hint: "confident & punchy" },
+  { value: "Gen Z", emoji: "💅", hint: "slang & internet lingo" },
+  { value: "Heartfelt", emoji: "💛", hint: "warm & emotional" },
+  { value: "Minimal", emoji: "🤍", hint: "short & understated" },
+];
+
+const toneInstruction = (tone: CaptionTone): string => {
+  switch (tone) {
+    case "Witty":
+      return "Voice: WITTY — use clever wordplay, double meanings, light humor and a punchline. Avoid being corny.";
+    case "Inspirational":
+      return "Voice: INSPIRATIONAL — uplifting, motivational, evocative imagery, end on a forward-looking note.";
+    case "Bold":
+      return "Voice: BOLD — confident, punchy, declarative sentences, no hedging, strong verbs.";
+    case "Gen Z":
+      return "Voice: GEN Z — use Gen Z slang and internet lingo like 'slay', 'no cap', 'lowkey', 'it's giving', 'main character energy', 'ate and left no crumbs', 'understood the assignment', 'periodt'. Sound like a trendy Gen Z person — playful, ironic, very online.";
+    case "Heartfelt":
+      return "Voice: HEARTFELT — warm, emotional, sincere, gentle, gratitude-tinged.";
+    case "Minimal":
+      return "Voice: MINIMAL — short, understated, lowercase where natural, max 1 emoji, no filler.";
+  }
+};
 
 interface InstagramResult {
   witty: string;
@@ -29,6 +56,7 @@ const PhotoCaptionGenerator = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [platform, setPlatform] = useState<CaptionPlatform>("instagram");
+  const [tone, setTone] = useState<CaptionTone>("Witty");
   const [igResult, setIgResult] = useState<InstagramResult | null>(null);
   const [liResult, setLiResult] = useState<LinkedInResult | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -114,7 +142,8 @@ const PhotoCaptionGenerator = () => {
   "alt_text": "a concise descriptive alt text for accessibility (1-2 sentences, no emojis)"
 }`;
 
-    const systemPrompt = platform === "instagram" ? instagramPrompt : linkedinPrompt;
+    const baseSystemPrompt = platform === "instagram" ? instagramPrompt : linkedinPrompt;
+    const systemPrompt = `${baseSystemPrompt}\n\n${toneInstruction(tone)}\nApply this voice consistently to EVERY text field in the JSON (captions/posts). Do NOT change the JSON keys or schema.`;
 
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -218,7 +247,40 @@ const PhotoCaptionGenerator = () => {
         </div>
       </div>
 
-      {/* Upload */}
+      {/* Tone Selector */}
+      <div className="animate-fade-in-up space-y-3" style={{ animationDelay: "130ms" }}>
+        <p className="text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
+          🎭 Pick a tone
+        </p>
+        <div className="flex flex-wrap justify-center gap-2">
+          {TONES.map((t) => {
+            const active = tone === t.value;
+            return (
+              <button
+                key={t.value}
+                onClick={() => setTone(t.value)}
+                title={t.hint}
+                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 border ${
+                  active
+                    ? `${
+                        isInstagram
+                          ? "bg-gradient-to-r from-pink-500 to-fuchsia-500 border-transparent"
+                          : "bg-gradient-to-r from-sky-600 to-blue-700 border-transparent"
+                      } text-white shadow-lg scale-105`
+                    : "bg-background/60 border-border/50 text-muted-foreground hover:text-foreground hover:border-border hover:scale-[1.03]"
+                }`}
+              >
+                <span className="mr-1">{t.emoji}</span>
+                {t.value}
+              </button>
+            );
+          })}
+        </div>
+        <p className="text-center text-[11px] text-muted-foreground">
+          {TONES.find((t) => t.value === tone)?.hint}
+        </p>
+      </div>
+
       <div className="animate-fade-in-up glass-strong rounded-2xl p-5 sm:p-7 space-y-5" style={{ animationDelay: "150ms" }}>
         {!imageData ? (
           <label
