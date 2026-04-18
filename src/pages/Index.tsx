@@ -1,16 +1,20 @@
 import { useState, useEffect } from "react";
-import { Loader2, Sparkles, Wand2, ArrowDown } from "lucide-react";
+import { Loader2, Sparkles, Wand2, ArrowDown, FileText, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PlatformPreview from "@/components/PlatformPreview";
 import ShareButtons from "@/components/ShareButtons";
 import FloatingParticles from "@/components/FloatingParticles";
+import PhotoCaptionGenerator from "@/components/PhotoCaptionGenerator";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type Platform = "instagram" | "linkedin";
+type Mode = "bio" | "caption";
 type Tone = "Professional" | "Casual" | "Funny" | "Inspirational" | "Gen Z";
 
 const toneEmojis: Record<Tone, string> = {
@@ -24,6 +28,8 @@ const toneEmojis: Record<Tone, string> = {
 const Index = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [hasApiKey, setHasApiKey] = useState(false);
+  const [mode, setMode] = useState<Mode>("bio");
+  const isMobile = useIsMobile();
 
   const [name, setName] = useState("");
   const [profession, setProfession] = useState("");
