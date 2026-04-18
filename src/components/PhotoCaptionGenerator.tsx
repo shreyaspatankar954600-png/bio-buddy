@@ -243,11 +243,42 @@ const PhotoCaptionGenerator = () => {
             }`}
           >
             💼 LinkedIn
-          </button>
-        </div>
       </div>
 
-      {/* Upload */}
+      {/* Tone Selector */}
+      <div className="animate-fade-in-up space-y-3" style={{ animationDelay: "130ms" }}>
+        <p className="text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
+          🎭 Pick a tone
+        </p>
+        <div className="flex flex-wrap justify-center gap-2">
+          {TONES.map((t) => {
+            const active = tone === t.value;
+            return (
+              <button
+                key={t.value}
+                onClick={() => setTone(t.value)}
+                title={t.hint}
+                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 border ${
+                  active
+                    ? `${
+                        isInstagram
+                          ? "bg-gradient-to-r from-pink-500 to-fuchsia-500 border-transparent"
+                          : "bg-gradient-to-r from-sky-600 to-blue-700 border-transparent"
+                      } text-white shadow-lg scale-105`
+                    : "bg-background/60 border-border/50 text-muted-foreground hover:text-foreground hover:border-border hover:scale-[1.03]"
+                }`}
+              >
+                <span className="mr-1">{t.emoji}</span>
+                {t.value}
+              </button>
+            );
+          })}
+        </div>
+        <p className="text-center text-[11px] text-muted-foreground">
+          {TONES.find((t) => t.value === tone)?.hint}
+        </p>
+      </div>
+
       <div className="animate-fade-in-up glass-strong rounded-2xl p-5 sm:p-7 space-y-5" style={{ animationDelay: "150ms" }}>
         {!imageData ? (
           <label
