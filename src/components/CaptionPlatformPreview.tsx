@@ -40,7 +40,7 @@ export const InstagramPreview = ({
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="rounded-2xl overflow-hidden bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-xl max-w-md mx-auto w-full">
+    <div className="rounded-2xl overflow-hidden bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-xl w-full max-w-md mx-auto lg:max-w-none">
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2.5">
         <div className="flex items-center gap-2.5">
