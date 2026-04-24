@@ -145,7 +145,8 @@ const PhotoCaptionGenerator = () => {
 }`;
 
     const baseSystemPrompt = platform === "instagram" ? instagramPrompt : linkedinPrompt;
-    const systemPrompt = `${baseSystemPrompt}\n\n${toneInstruction(tone)}\nApply this voice consistently to EVERY text field in the JSON (captions/posts). Do NOT change the JSON keys or schema.`;
+    const contextInstruction = contextNote.trim() ? `\n\nUSER CONTEXT: "${contextNote.trim()}"\nIncorporate this context naturally into the captions/posts. Make it feel authentic and relevant.` : "";
+    const systemPrompt = `${baseSystemPrompt}${contextInstruction}\n\n${toneInstruction(tone)}\nApply this voice consistently to EVERY text field in the JSON (captions/posts). Do NOT change the JSON keys or schema.`;
 
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
