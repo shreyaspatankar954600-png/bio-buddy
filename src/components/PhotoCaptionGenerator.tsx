@@ -53,6 +53,7 @@ interface LinkedInResult {
 const PhotoCaptionGenerator = () => {
   const [imageData, setImageData] = useState<string | null>(null);
   const [imageName, setImageName] = useState<string>("");
+  const [contextNote, setContextNote] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [platform, setPlatform] = useState<CaptionPlatform>("instagram");
