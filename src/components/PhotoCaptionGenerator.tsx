@@ -284,6 +284,27 @@ const PhotoCaptionGenerator = () => {
         </p>
       </div>
 
+      {/* Context Note */}
+      <div className="animate-fade-in-up space-y-2" style={{ animationDelay: "140ms" }}>
+        <div className="flex items-center justify-center gap-2">
+          <MessageSquare className="w-3.5 h-3.5 text-muted-foreground" />
+          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            Add Context (Optional)
+          </p>
+        </div>
+        <Textarea
+          value={contextNote}
+          onChange={(e) => setContextNote(e.target.value)}
+          placeholder={isInstagram 
+            ? "e.g., 'Just got promoted at work!' or 'Diwali trip with family' — helps captions feel personal" 
+            : "e.g., 'Just completed my AWS certification' or 'Speaking at TechConf 2024' — helps posts feel authentic"}
+          className="min-h-[80px] resize-none bg-background/60 border-border/50 focus:border-primary/50 focus:ring-primary/20 text-sm placeholder:text-muted-foreground/60"
+        />
+        <p className="text-center text-[11px] text-muted-foreground">
+          {contextNote.trim() ? `✨ AI will weave "${contextNote.trim().slice(0, 30)}${contextNote.trim().length > 30 ? '...' : ''}" into your captions` : "Leave empty for general captions based on image alone"}
+        </p>
+      </div>
+
       <div className="animate-fade-in-up glass-strong rounded-2xl p-5 sm:p-7 space-y-5" style={{ animationDelay: "150ms" }}>
         {!imageData ? (
           <label
