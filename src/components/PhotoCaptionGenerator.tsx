@@ -1,8 +1,9 @@
 import { useRef, useState } from "react";
-import { Loader2, Upload, Sparkles, Wand2, ImageIcon, X, MessageSquare } from "lucide-react";
+import { Loader2, Upload, Sparkles, Wand2, ImageIcon, X, MessageSquare, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import CaptionCard from "./CaptionCard";
+import { InstagramPreview, LinkedInPreview } from "./CaptionPlatformPreview";
 
 type CaptionPlatform = "instagram" | "linkedin";
 type CaptionTone = "Witty" | "Inspirational" | "Bold" | "Gen Z" | "Heartfelt" | "Minimal";
@@ -61,6 +62,8 @@ const PhotoCaptionGenerator = () => {
   const [tone, setTone] = useState<CaptionTone>("Witty");
   const [igResult, setIgResult] = useState<InstagramResult | null>(null);
   const [liResult, setLiResult] = useState<LinkedInResult | null>(null);
+  const [igVariant, setIgVariant] = useState<"witty" | "professional" | "casual">("witty");
+  const [liVariant, setLiVariant] = useState<"professional_post" | "storytelling_post" | "short_post">("professional_post");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = (file: File) => {
@@ -383,80 +386,115 @@ const PhotoCaptionGenerator = () => {
       )}
 
       {/* Instagram Results */}
-      {isInstagram && igResult && !loading && (
-        <div className="space-y-6">
-          <div className="animate-fade-in-up text-center space-y-1">
+      {isInstagram && igResult && imageData && !loading && (
+        <div className="space-y-6 animate-fade-in-up">
+          <div className="text-center space-y-1">
+            <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${accentBg}`}>
+              <Eye className="w-3 h-3" /> Live Instagram Preview
+            </div>
             <h3 className={`text-2xl font-bold bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
-              Your Instagram Captions Are Ready! 🎉
+              Exactly how it'll look on Instagram
             </h3>
-            <p className="text-sm text-muted-foreground">Tap any card to copy</p>
+            <p className="text-sm text-muted-foreground">Switch styles below — what you see is what you'll post</p>
           </div>
 
-          <div className="space-y-3">
-            <CaptionCard label="Witty" emoji="😏" content={igResult.witty} accent="pink" delay={0} />
-            <CaptionCard label="Professional" emoji="💼" content={igResult.professional} accent="purple" delay={80} />
-            <CaptionCard label="Casual" emoji="😎" content={igResult.casual} accent="amber" delay={160} />
+          {/* Variant switcher */}
+          <div className="flex justify-center">
+            <div className="inline-flex rounded-2xl glass p-1.5 gap-1 flex-wrap justify-center max-w-full">
+              {([
+                { key: "witty", label: "Witty", emoji: "😏" },
+                { key: "professional", label: "Professional", emoji: "💼" },
+                { key: "casual", label: "Casual", emoji: "😎" },
+              ] as const).map((v) => (
+                <button
+                  key={v.key}
+                  onClick={() => setIgVariant(v.key)}
+                  className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${
+                    igVariant === v.key
+                      ? "bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white shadow-lg scale-105"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  }`}
+                >
+                  <span className="mr-1">{v.emoji}</span>{v.label}
+                </button>
+              ))}
+            </div>
           </div>
+
+          <InstagramPreview
+            imageUrl={imageData}
+            caption={igResult[igVariant]}
+            hashtags={igResult.hashtags}
+            variant={igVariant}
+          />
 
           <div className="space-y-1 pt-2">
             <h4 className="text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
               ✨ Instagram Toolkit
             </h4>
+            <p className="text-center text-[11px] text-muted-foreground">Tap any card to copy</p>
           </div>
           <div className="space-y-3">
-            <CaptionCard label="Hashtags" emoji="#️⃣" content={igResult.hashtags} accent="pink" multiline delay={240} />
-            <CaptionCard label="Whom To Tag" emoji="🏷️" content={igResult.tags} accent="purple" delay={320} />
-            <CaptionCard label="Image Alt Text" emoji="♿" content={igResult.alt_text} accent="emerald" delay={400} />
+            <CaptionCard label="Hashtags" emoji="#️⃣" content={igResult.hashtags} accent="pink" multiline delay={0} />
+            <CaptionCard label="Whom To Tag" emoji="🏷️" content={igResult.tags} accent="purple" delay={80} />
+            <CaptionCard label="Image Alt Text" emoji="♿" content={igResult.alt_text} accent="emerald" delay={160} />
           </div>
         </div>
       )}
 
       {/* LinkedIn Results */}
-      {!isInstagram && liResult && !loading && (
-        <div className="space-y-6">
-          <div className="animate-fade-in-up text-center space-y-1">
+      {!isInstagram && liResult && imageData && !loading && (
+        <div className="space-y-6 animate-fade-in-up">
+          <div className="text-center space-y-1">
+            <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${accentBg}`}>
+              <Eye className="w-3 h-3" /> Live LinkedIn Preview
+            </div>
             <h3 className={`text-2xl font-bold bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
-              Your LinkedIn Posts Are Ready! 🎉
+              Exactly how it'll look on LinkedIn
             </h3>
-            <p className="text-sm text-muted-foreground">Tap any card to copy</p>
+            <p className="text-sm text-muted-foreground">Switch post styles below — what you see is what you'll post</p>
           </div>
 
-          <div className="space-y-3">
-            <CaptionCard
-              label="Professional Post"
-              emoji="💼"
-              content={liResult.professional_post}
-              accent="blue"
-              multiline
-              delay={0}
-            />
-            <CaptionCard
-              label="Storytelling Post"
-              emoji="📖"
-              content={liResult.storytelling_post}
-              accent="purple"
-              multiline
-              delay={80}
-            />
-            <CaptionCard
-              label="Short Post"
-              emoji="⚡"
-              content={liResult.short_post}
-              accent="amber"
-              multiline
-              delay={160}
-            />
+          {/* Variant switcher */}
+          <div className="flex justify-center">
+            <div className="inline-flex rounded-2xl glass p-1.5 gap-1 flex-wrap justify-center max-w-full">
+              {([
+                { key: "professional_post", label: "Professional", emoji: "💼" },
+                { key: "storytelling_post", label: "Storytelling", emoji: "📖" },
+                { key: "short_post", label: "Short", emoji: "⚡" },
+              ] as const).map((v) => (
+                <button
+                  key={v.key}
+                  onClick={() => setLiVariant(v.key)}
+                  className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${
+                    liVariant === v.key
+                      ? "bg-gradient-to-r from-sky-600 to-blue-700 text-white shadow-lg scale-105"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  }`}
+                >
+                  <span className="mr-1">{v.emoji}</span>{v.label}
+                </button>
+              ))}
+            </div>
           </div>
+
+          <LinkedInPreview
+            imageUrl={imageData}
+            post={liResult[liVariant]}
+            hashtags={liResult.hashtags}
+            variant={liVariant.replace("_post", "")}
+          />
 
           <div className="space-y-1 pt-2">
             <h4 className="text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
               📣 LinkedIn Toolkit
             </h4>
+            <p className="text-center text-[11px] text-muted-foreground">Tap any card to copy</p>
           </div>
           <div className="space-y-3">
-            <CaptionCard label="Hashtags" emoji="#️⃣" content={liResult.hashtags} accent="blue" multiline delay={240} />
-            <CaptionCard label="Whom To Tag" emoji="🏷️" content={liResult.tags} accent="purple" delay={320} />
-            <CaptionCard label="Image Alt Text" emoji="♿" content={liResult.alt_text} accent="emerald" delay={400} />
+            <CaptionCard label="Hashtags" emoji="#️⃣" content={liResult.hashtags} accent="blue" multiline delay={0} />
+            <CaptionCard label="Whom To Tag" emoji="🏷️" content={liResult.tags} accent="purple" delay={80} />
+            <CaptionCard label="Image Alt Text" emoji="♿" content={liResult.alt_text} accent="emerald" delay={160} />
           </div>
         </div>
       )}
