@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
-import { Loader2, Upload, Sparkles, Wand2, ImageIcon, X } from "lucide-react";
+import { Loader2, Upload, Sparkles, Wand2, ImageIcon, X, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import CaptionCard from "./CaptionCard";
 
 type CaptionPlatform = "instagram" | "linkedin";
@@ -53,6 +54,7 @@ interface LinkedInResult {
 const PhotoCaptionGenerator = () => {
   const [imageData, setImageData] = useState<string | null>(null);
   const [imageName, setImageName] = useState<string>("");
+  const [contextNote, setContextNote] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [platform, setPlatform] = useState<CaptionPlatform>("instagram");
@@ -143,7 +145,8 @@ const PhotoCaptionGenerator = () => {
 }`;
 
     const baseSystemPrompt = platform === "instagram" ? instagramPrompt : linkedinPrompt;
-    const systemPrompt = `${baseSystemPrompt}\n\n${toneInstruction(tone)}\nApply this voice consistently to EVERY text field in the JSON (captions/posts). Do NOT change the JSON keys or schema.`;
+    const contextInstruction = contextNote.trim() ? `\n\nUSER CONTEXT: "${contextNote.trim()}"\nIncorporate this context naturally into the captions/posts. Make it feel authentic and relevant.` : "";
+    const systemPrompt = `${baseSystemPrompt}${contextInstruction}\n\n${toneInstruction(tone)}\nApply this voice consistently to EVERY text field in the JSON (captions/posts). Do NOT change the JSON keys or schema.`;
 
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -278,6 +281,27 @@ const PhotoCaptionGenerator = () => {
         </div>
         <p className="text-center text-[11px] text-muted-foreground">
           {TONES.find((t) => t.value === tone)?.hint}
+        </p>
+      </div>
+
+      {/* Context Note */}
+      <div className="animate-fade-in-up space-y-2" style={{ animationDelay: "140ms" }}>
+        <div className="flex items-center justify-center gap-2">
+          <MessageSquare className="w-3.5 h-3.5 text-muted-foreground" />
+          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            Add Context (Optional)
+          </p>
+        </div>
+        <Textarea
+          value={contextNote}
+          onChange={(e) => setContextNote(e.target.value)}
+          placeholder={isInstagram 
+            ? "e.g., 'Just got promoted at work!' or 'Diwali trip with family' — helps captions feel personal" 
+            : "e.g., 'Just completed my AWS certification' or 'Speaking at TechConf 2024' — helps posts feel authentic"}
+          className="min-h-[80px] resize-none bg-background/60 border-border/50 focus:border-primary/50 focus:ring-primary/20 text-sm placeholder:text-muted-foreground/60"
+        />
+        <p className="text-center text-[11px] text-muted-foreground">
+          {contextNote.trim() ? `✨ AI will weave "${contextNote.trim().slice(0, 30)}${contextNote.trim().length > 30 ? '...' : ''}" into your captions` : "Leave empty for general captions based on image alone"}
         </p>
       </div>
 
