@@ -168,9 +168,39 @@ const PhotoCaptionGenerator = () => {
   "alt_text": "a concise descriptive alt text for accessibility (1-2 sentences, no emojis)"
 }`;
 
+    const instagramPrompt = `You are an expert Instagram copywriter. Analyze the provided image carefully (people, mood, setting, objects, colors, vibe).
+
+Respond ONLY with valid JSON, no markdown, no commentary. Use this EXACT schema (the keys are STRUCTURAL VARIANTS, not tones — the TONE above governs all of them):
+{
+  "witty": "SHORT punchy Instagram caption with a clever twist or punchline (max 150 chars, 2-3 emojis). Apply the TONE above.",
+  "professional": "MEDIUM-length Instagram caption with a bit more polish and structure (max 150 chars, 1-2 emojis). Apply the TONE above — if the tone is Gen Z, this MUST still sound Gen Z, just slightly more composed.",
+  "casual": "LAID-BACK conversational Instagram caption like talking to a friend (max 150 chars, with emojis). Apply the TONE above.",
+  "hashtags": "20-25 highly relevant Instagram hashtags space-separated, mix of niche + popular, all starting with #",
+  "tags": "comma-separated suggestions of who/what to tag on Instagram (people, brands, locations visible). Use @handle format where it looks like one (e.g. '@nike, your friend, @mumbai')",
+  "alt_text": "a concise descriptive alt text for accessibility (1-2 sentences, no emojis, neutral tone for accessibility)"
+}`;
+
+    const linkedinPrompt = `You are an expert LinkedIn personal-branding copywriter. Analyze the provided image carefully (note achievements, certificates, events, people, brands, settings).
+
+Respond ONLY with valid JSON, no markdown, no commentary. Use this EXACT schema (the keys are STRUCTURAL VARIANTS — length and format only — the TONE above governs the voice of all of them):
+{
+  "professional_post": "LONGER LinkedIn post (4-6 short paragraphs separated by \\n\\n, hook + context + insight + CTA). Apply the TONE above — if Gen Z, this is still a Gen Z post, just longer with more structure.",
+  "storytelling_post": "NARRATIVE LinkedIn post (5-7 short paragraphs separated by \\n\\n, personal story arc with hook, lessons, ends with reflective question). Apply the TONE above.",
+  "short_post": "PUNCHY short LinkedIn post (2-3 short paragraphs separated by \\n\\n, hook + key takeaway + CTA). Apply the TONE above.",
+  "hashtags": "8-12 relevant LinkedIn hashtags space-separated, all starting with #",
+  "tags": "comma-separated suggestions of who/what to tag on LinkedIn (companies, mentors, organizations, event hosts visible). Use @handle format where it looks like one (e.g. '@Microsoft, your manager, the event organizer')",
+  "alt_text": "a concise descriptive alt text for accessibility (1-2 sentences, no emojis, neutral tone for accessibility)"
+}`;
+
     const baseSystemPrompt = platform === "instagram" ? instagramPrompt : linkedinPrompt;
-    const contextInstruction = contextNote.trim() ? `\n\nUSER CONTEXT: "${contextNote.trim()}"\nIncorporate this context naturally into the captions/posts. Make it feel authentic and relevant.` : "";
-    const systemPrompt = `${baseSystemPrompt}${contextInstruction}\n\n${toneInstruction(tone)}\nApply this voice consistently to EVERY text field in the JSON (captions/posts). Do NOT change the JSON keys or schema.`;
+    const contextInstruction = contextNote.trim() ? `\n\nUSER CONTEXT (real backstory to weave in): "${contextNote.trim()}"` : "";
+    // Tone is placed FIRST and as the highest-priority directive so it overrides any
+    // tone-suggestive words in the schema field labels (like "professional").
+    const systemPrompt = `${toneInstruction(tone)}
+
+${baseSystemPrompt}${contextInstruction}
+
+FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply it to EVERY text field except "hashtags", "tags", and "alt_text". The schema field names ("witty", "professional", "casual", "professional_post" etc.) describe LENGTH and FORMAT only — they are NOT additional tone instructions. Do NOT change the JSON keys or schema.`;
 
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -183,6 +213,12 @@ const PhotoCaptionGenerator = () => {
           model: "meta-llama/llama-4-scout-17b-16e-instruct",
           messages: [
             {
+              role: "system",
+              content: tone === "Gen Z"
+                ? "You are a chronically-online Gen Z creator (born 1997-2012). You write everything in Gen Z slang, lowercase, with internet humor. You NEVER write corporate, polished, or millennial-sounding copy. Even when asked to be 'professional', you stay Gen Z — just slightly more structured."
+                : `You are a creative copywriter who strictly follows tone instructions. The user's chosen tone takes priority over field labels.`,
+            },
+            {
               role: "user",
               content: [
                 { type: "text", text: systemPrompt },
@@ -190,7 +226,7 @@ const PhotoCaptionGenerator = () => {
               ],
             },
           ],
-          temperature: 0.85,
+          temperature: tone === "Gen Z" ? 1.0 : 0.85,
           max_tokens: 1500,
           response_format: { type: "json_object" },
         }),
