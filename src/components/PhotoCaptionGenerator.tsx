@@ -390,43 +390,37 @@ const PhotoCaptionGenerator = () => {
         <div className="space-y-6 animate-fade-in-up">
           <div className="text-center space-y-1">
             <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${accentBg}`}>
-              <Eye className="w-3 h-3" /> Live Instagram Preview
+              <Eye className="w-3 h-3" /> Live Instagram Previews
             </div>
             <h3 className={`text-2xl font-bold bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
-              Exactly how it'll look on Instagram
+              Three styles, exactly how they'll look on Instagram
             </h3>
-            <p className="text-sm text-muted-foreground">Switch styles below — what you see is what you'll post</p>
+            <p className="text-sm text-muted-foreground">Compare side-by-side and copy your favorite</p>
           </div>
 
-          {/* Variant switcher */}
-          <div className="flex justify-center">
-            <div className="inline-flex rounded-2xl glass p-1.5 gap-1 flex-wrap justify-center max-w-full">
-              {([
-                { key: "witty", label: "Witty", emoji: "😏" },
-                { key: "professional", label: "Professional", emoji: "💼" },
-                { key: "casual", label: "Casual", emoji: "😎" },
-              ] as const).map((v) => (
-                <button
-                  key={v.key}
-                  onClick={() => setIgVariant(v.key)}
-                  className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${
-                    igVariant === v.key
-                      ? "bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white shadow-lg scale-105"
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                  }`}
-                >
-                  <span className="mr-1">{v.emoji}</span>{v.label}
-                </button>
-              ))}
-            </div>
+          {/* Three previews — side-by-side on desktop, stacked on mobile */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-4 items-start">
+            {([
+              { key: "witty", label: "Witty", emoji: "😏" },
+              { key: "professional", label: "Professional", emoji: "💼" },
+              { key: "casual", label: "Casual", emoji: "😎" },
+            ] as const).map((v, i) => (
+              <div key={v.key} className="space-y-2 animate-fade-in-up" style={{ animationDelay: `${i * 80}ms` }}>
+                <div className="flex items-center justify-center gap-1.5">
+                  <span className="text-lg">{v.emoji}</span>
+                  <span className="text-sm font-bold bg-gradient-to-r from-pink-500 to-fuchsia-500 bg-clip-text text-transparent uppercase tracking-wider">
+                    {v.label}
+                  </span>
+                </div>
+                <InstagramPreview
+                  imageUrl={imageData}
+                  caption={igResult[v.key]}
+                  hashtags={igResult.hashtags}
+                  variant={v.key}
+                />
+              </div>
+            ))}
           </div>
-
-          <InstagramPreview
-            imageUrl={imageData}
-            caption={igResult[igVariant]}
-            hashtags={igResult.hashtags}
-            variant={igVariant}
-          />
 
           <div className="space-y-1 pt-2">
             <h4 className="text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
@@ -447,43 +441,37 @@ const PhotoCaptionGenerator = () => {
         <div className="space-y-6 animate-fade-in-up">
           <div className="text-center space-y-1">
             <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${accentBg}`}>
-              <Eye className="w-3 h-3" /> Live LinkedIn Preview
+              <Eye className="w-3 h-3" /> Live LinkedIn Previews
             </div>
             <h3 className={`text-2xl font-bold bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
-              Exactly how it'll look on LinkedIn
+              Three post styles, exactly how they'll look on LinkedIn
             </h3>
-            <p className="text-sm text-muted-foreground">Switch post styles below — what you see is what you'll post</p>
+            <p className="text-sm text-muted-foreground">Compare side-by-side and copy your favorite</p>
           </div>
 
-          {/* Variant switcher */}
-          <div className="flex justify-center">
-            <div className="inline-flex rounded-2xl glass p-1.5 gap-1 flex-wrap justify-center max-w-full">
-              {([
-                { key: "professional_post", label: "Professional", emoji: "💼" },
-                { key: "storytelling_post", label: "Storytelling", emoji: "📖" },
-                { key: "short_post", label: "Short", emoji: "⚡" },
-              ] as const).map((v) => (
-                <button
-                  key={v.key}
-                  onClick={() => setLiVariant(v.key)}
-                  className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${
-                    liVariant === v.key
-                      ? "bg-gradient-to-r from-sky-600 to-blue-700 text-white shadow-lg scale-105"
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                  }`}
-                >
-                  <span className="mr-1">{v.emoji}</span>{v.label}
-                </button>
-              ))}
-            </div>
+          {/* Three previews — side-by-side on desktop, stacked on mobile */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-4 items-start">
+            {([
+              { key: "professional_post", label: "Professional", emoji: "💼" },
+              { key: "storytelling_post", label: "Storytelling", emoji: "📖" },
+              { key: "short_post", label: "Short", emoji: "⚡" },
+            ] as const).map((v, i) => (
+              <div key={v.key} className="space-y-2 animate-fade-in-up" style={{ animationDelay: `${i * 80}ms` }}>
+                <div className="flex items-center justify-center gap-1.5">
+                  <span className="text-lg">{v.emoji}</span>
+                  <span className="text-sm font-bold bg-gradient-to-r from-sky-600 to-blue-700 bg-clip-text text-transparent uppercase tracking-wider">
+                    {v.label}
+                  </span>
+                </div>
+                <LinkedInPreview
+                  imageUrl={imageData}
+                  post={liResult[v.key]}
+                  hashtags={liResult.hashtags}
+                  variant={v.key.replace("_post", "")}
+                />
+              </div>
+            ))}
           </div>
-
-          <LinkedInPreview
-            imageUrl={imageData}
-            post={liResult[liVariant]}
-            hashtags={liResult.hashtags}
-            variant={liVariant.replace("_post", "")}
-          />
 
           <div className="space-y-1 pt-2">
             <h4 className="text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">

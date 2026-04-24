@@ -145,7 +145,7 @@ const Index = () => {
           onApiKeySave={handleApiKeySave}
         />
 
-        <main className="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10 flex flex-col gap-8">
+        <main className={`flex-1 w-full mx-auto px-4 sm:px-6 py-6 sm:py-10 flex flex-col gap-8 transition-[max-width] duration-300 ${mode === "caption" ? "max-w-7xl" : "max-w-4xl"}`}>
           {/* Mode Toggle */}
           <div className="animate-fade-in-down flex justify-center">
             <div className="inline-flex rounded-2xl glass-strong p-1.5 gap-1 shadow-md">
