@@ -148,26 +148,8 @@ const PhotoCaptionGenerator = () => {
     setIgResult(null);
     setLiResult(null);
 
-    const instagramPrompt = `You are an expert Instagram copywriter. Analyze the provided image carefully (people, mood, setting, objects, colors, vibe). Respond ONLY with valid JSON, no markdown, no commentary. Use this EXACT schema:
-{
-  "witty": "a clever, punchy Instagram caption with wordplay (max 150 chars, 2-3 emojis)",
-  "professional": "a polished Instagram caption suitable for a creator/brand page (max 150 chars, 1-2 emojis)",
-  "casual": "a relaxed, friendly Instagram caption like a real person posting to friends (max 150 chars, with emojis)",
-  "hashtags": "20-25 highly relevant Instagram hashtags space-separated, mix of niche + popular, all starting with #",
-  "tags": "comma-separated suggestions of who/what to tag on Instagram (people, brands, locations visible). Use @handle format where it looks like one (e.g. '@nike, your friend, @mumbai')",
-  "alt_text": "a concise descriptive alt text for accessibility (1-2 sentences, no emojis)"
-}`;
-
-    const linkedinPrompt = `You are an expert LinkedIn personal-branding copywriter. Analyze the provided image carefully (note achievements, certificates, events, people, brands, settings). Respond ONLY with valid JSON, no markdown, no commentary. Use this EXACT schema:
-{
-  "professional_post": "a polished LinkedIn post (4-6 short paragraphs separated by \\n\\n, hook + context + insight + CTA, professional tone)",
-  "storytelling_post": "a narrative-style LinkedIn post (5-7 short paragraphs separated by \\n\\n, personal story arc, emotional hook, lessons learned, ends with reflective question)",
-  "short_post": "a concise punchy LinkedIn post (2-3 short paragraphs separated by \\n\\n, hook + key takeaway + CTA)",
-  "hashtags": "8-12 relevant professional LinkedIn hashtags space-separated, all starting with #",
-  "tags": "comma-separated suggestions of who/what to tag on LinkedIn (companies, mentors, organizations, event hosts visible). Use @handle format where it looks like one (e.g. '@Microsoft, your manager, the event organizer')",
-  "alt_text": "a concise descriptive alt text for accessibility (1-2 sentences, no emojis)"
-}`;
-
+    // Tone-aware prompts: schema fields describe LENGTH/FORMAT only.
+    // The tone block (placed at the top of systemPrompt) governs voice.
     const instagramPrompt = `You are an expert Instagram copywriter. Analyze the provided image carefully (people, mood, setting, objects, colors, vibe).
 
 Respond ONLY with valid JSON, no markdown, no commentary. Use this EXACT schema (the keys are STRUCTURAL VARIANTS, not tones — the TONE above governs all of them):
