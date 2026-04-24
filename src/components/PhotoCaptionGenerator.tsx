@@ -62,6 +62,8 @@ const PhotoCaptionGenerator = () => {
   const [tone, setTone] = useState<CaptionTone>("Witty");
   const [igResult, setIgResult] = useState<InstagramResult | null>(null);
   const [liResult, setLiResult] = useState<LinkedInResult | null>(null);
+  const [igVariant, setIgVariant] = useState<"witty" | "professional" | "casual">("witty");
+  const [liVariant, setLiVariant] = useState<"professional_post" | "storytelling_post" | "short_post">("professional_post");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = (file: File) => {
