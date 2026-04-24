@@ -1,8 +1,9 @@
 import { useRef, useState } from "react";
-import { Loader2, Upload, Sparkles, Wand2, ImageIcon, X, MessageSquare } from "lucide-react";
+import { Loader2, Upload, Sparkles, Wand2, ImageIcon, X, MessageSquare, Eye, Copy as CopyIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import CaptionCard from "./CaptionCard";
+import { InstagramPreview, LinkedInPreview } from "./CaptionPlatformPreview";
 
 type CaptionPlatform = "instagram" | "linkedin";
 type CaptionTone = "Witty" | "Inspirational" | "Bold" | "Gen Z" | "Heartfelt" | "Minimal";
