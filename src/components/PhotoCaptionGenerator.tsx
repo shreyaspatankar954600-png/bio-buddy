@@ -20,17 +20,38 @@ const TONES: { value: CaptionTone; emoji: string; hint: string }[] = [
 const toneInstruction = (tone: CaptionTone): string => {
   switch (tone) {
     case "Witty":
-      return "Voice: WITTY — use clever wordplay, double meanings, light humor and a punchline. Avoid being corny.";
+      return `TONE: WITTY 😏
+- Use clever wordplay, double meanings, light humor, and a punchline.
+- Be cheeky and a little sarcastic. Avoid being corny.
+- Example vibe: "Plot twist: I peaked at the snack table 🥨"`;
     case "Inspirational":
-      return "Voice: INSPIRATIONAL — uplifting, motivational, evocative imagery, end on a forward-looking note.";
+      return `TONE: INSPIRATIONAL ✨
+- Uplifting, motivational, evocative imagery, end on a forward-looking note.
+- Use words like "rise", "become", "journey", "light", "begin".
+- Example vibe: "Some chapters are quiet, but they're shaping the loudest version of you ✨"`;
     case "Bold":
-      return "Voice: BOLD — confident, punchy, declarative sentences, no hedging, strong verbs.";
+      return `TONE: BOLD 🔥
+- Confident, punchy, declarative sentences. NO hedging. Strong verbs.
+- Short sentences. Maximum impact.
+- Example vibe: "I don't chase. I attract. Watch me."`;
     case "Gen Z":
-      return "Voice: GEN Z — use Gen Z slang and internet lingo like 'slay', 'no cap', 'lowkey', 'it's giving', 'main character energy', 'ate and left no crumbs', 'understood the assignment', 'periodt'. Sound like a trendy Gen Z person — playful, ironic, very online.";
+      return `TONE: GEN Z 💅 (CRITICAL — THIS IS NON-NEGOTIABLE)
+- You MUST sound like a chronically-online Gen Z (born 1997-2012). NOT millennial. NOT corporate. NOT polished.
+- REQUIRED slang in EVERY caption/post (use at least 3-5 of these): "slay", "no cap", "lowkey", "highkey", "it's giving ___", "main character energy", "ate and left no crumbs", "understood the assignment", "periodt", "bestie", "the way that ___", "not me ___ing", "I fear ___", "delulu", "rent free", "ick", "iykyk", "hits different", "vibe check", "girl math", "boy math", "we love to see it", "say less", "absolutely sending me".
+- Use lowercase often. Drop punctuation casually. Use emojis like 💅✨😭🫶🔥🎀 NOT corporate emojis.
+- DO NOT write professional, polished, or motivational copy. If it sounds like a brand wrote it, START OVER.
+- Example vibe Instagram: "not me serving looks at the grocery store 💅 it's giving main character no cap ✨"
+- Example vibe LinkedIn: "ok bestie hear me out — landed the internship and I'm lowkey shaking 😭 understood the assignment fr fr. shoutout to my mentor for not letting me be delulu about my potential 🫶"
+- IGNORE any field labels like "professional" or "polished" in the schema below — TONE OVERRIDES THEM. Every field must sound Gen Z.`;
     case "Heartfelt":
-      return "Voice: HEARTFELT — warm, emotional, sincere, gentle, gratitude-tinged.";
+      return `TONE: HEARTFELT 💛
+- Warm, emotional, sincere, gentle, gratitude-tinged.
+- Use soft language. Mention feelings explicitly.
+- Example vibe: "Held this moment a little longer today. Grateful beyond words 💛"`;
     case "Minimal":
-      return "Voice: MINIMAL — short, understated, lowercase where natural, max 1 emoji, no filler.";
+      return `TONE: MINIMAL 🤍
+- Short. Understated. Lowercase where natural. Max 1 emoji. No filler.
+- Example vibe: "soft days. quiet wins. 🤍"`;
   }
 };
 
