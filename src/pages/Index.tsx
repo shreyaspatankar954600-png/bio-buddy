@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Loader2, Sparkles, Wand2, ArrowDown, FileText, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
@@ -35,6 +36,7 @@ const Index = () => {
   const [profession, setProfession] = useState("");
   const [keywords, setKeywords] = useState("");
   const [tone, setTone] = useState<Tone>("Professional");
+  const [extraContext, setExtraContext] = useState("");
   const [platform, setPlatform] = useState<Platform>("instagram");
 
   const [bios, setBios] = useState<string[]>([]);
@@ -89,7 +91,11 @@ const Index = () => {
       ? "Tone: Gen Z — use Gen Z slang, internet lingo, and trendy words like 'slay', 'no cap', 'lowkey', 'vibe check', 'it's giving', 'bestie', 'main character energy', 'ate and left no crumbs', 'understood the assignment', 'periodt', 'based', 'living rent free'. Make it sound like a trendy Gen Z person wrote it."
       : `Tone: ${tone}.`;
 
-    const prompt = `Generate exactly 3 bio variations for ${platform} for a person named ${name} who is a ${profession}. Keywords: ${keywords || "none"}. ${toneInstruction} Format: return only the 3 bios, numbered 1, 2, 3. For Instagram keep each under 150 characters. For LinkedIn keep each under 220 characters.`;
+    const contextLine = extraContext.trim()
+      ? ` Extra context to weave in naturally (do NOT quote it verbatim, integrate it): "${extraContext.trim()}".`
+      : "";
+
+    const prompt = `Generate exactly 3 bio variations for ${platform} for a person named ${name} who is a ${profession}. Keywords: ${keywords || "none"}. ${toneInstruction}${contextLine} Format: return only the 3 bios, numbered 1, 2, 3. For Instagram keep each under 150 characters. For LinkedIn keep each under 220 characters.`;
 
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -274,6 +280,27 @@ const Index = () => {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="extra-context" className="text-sm font-semibold flex items-center gap-1">
+                💡 Anything specific to add? <span className="text-xs font-normal text-muted-foreground">(optional)</span>
+              </Label>
+              <Textarea
+                id="extra-context"
+                placeholder={
+                  platform === "linkedin"
+                    ? "e.g., 'Just got promoted to Senior Engineer', 'Open to mentoring junior devs', 'Ex-Google, now building my own SaaS'..."
+                    : "e.g., 'Dog mom of 2', 'Currently in Bali', 'Coffee addict who codes'..."
+                }
+                value={extraContext}
+                onChange={(e) => setExtraContext(e.target.value.slice(0, 300))}
+                maxLength={300}
+                className="min-h-[72px] resize-none transition-all duration-300 focus:shadow-md"
+              />
+              <p className="text-[11px] text-muted-foreground text-right">
+                {extraContext.length}/300 — leave empty to skip
+              </p>
             </div>
 
             {error && (
