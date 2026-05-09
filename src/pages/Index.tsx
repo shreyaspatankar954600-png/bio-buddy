@@ -282,6 +282,27 @@ const Index = () => {
               </Select>
             </div>
 
+            <div className="space-y-1.5">
+              <Label htmlFor="extra-context" className="text-sm font-semibold flex items-center gap-1">
+                💡 Anything specific to add? <span className="text-xs font-normal text-muted-foreground">(optional)</span>
+              </Label>
+              <Textarea
+                id="extra-context"
+                placeholder={
+                  platform === "linkedin"
+                    ? "e.g., 'Just got promoted to Senior Engineer', 'Open to mentoring junior devs', 'Ex-Google, now building my own SaaS'..."
+                    : "e.g., 'Dog mom of 2', 'Currently in Bali', 'Coffee addict who codes'..."
+                }
+                value={extraContext}
+                onChange={(e) => setExtraContext(e.target.value.slice(0, 300))}
+                maxLength={300}
+                className="min-h-[72px] resize-none transition-all duration-300 focus:shadow-md"
+              />
+              <p className="text-[11px] text-muted-foreground text-right">
+                {extraContext.length}/300 — leave empty to skip
+              </p>
+            </div>
+
             {error && (
               <div className="animate-fade-in-up text-sm text-destructive font-medium bg-destructive/10 px-4 py-2.5 rounded-xl border border-destructive/20">
                 {error}
