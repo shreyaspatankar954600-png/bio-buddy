@@ -91,7 +91,11 @@ const Index = () => {
       ? "Tone: Gen Z — use Gen Z slang, internet lingo, and trendy words like 'slay', 'no cap', 'lowkey', 'vibe check', 'it's giving', 'bestie', 'main character energy', 'ate and left no crumbs', 'understood the assignment', 'periodt', 'based', 'living rent free'. Make it sound like a trendy Gen Z person wrote it."
       : `Tone: ${tone}.`;
 
-    const prompt = `Generate exactly 3 bio variations for ${platform} for a person named ${name} who is a ${profession}. Keywords: ${keywords || "none"}. ${toneInstruction} Format: return only the 3 bios, numbered 1, 2, 3. For Instagram keep each under 150 characters. For LinkedIn keep each under 220 characters.`;
+    const contextLine = extraContext.trim()
+      ? ` Extra context to weave in naturally (do NOT quote it verbatim, integrate it): "${extraContext.trim()}".`
+      : "";
+
+    const prompt = `Generate exactly 3 bio variations for ${platform} for a person named ${name} who is a ${profession}. Keywords: ${keywords || "none"}. ${toneInstruction}${contextLine} Format: return only the 3 bios, numbered 1, 2, 3. For Instagram keep each under 150 characters. For LinkedIn keep each under 220 characters.`;
 
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
