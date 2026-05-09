@@ -36,6 +36,7 @@ const Index = () => {
   const [profession, setProfession] = useState("");
   const [keywords, setKeywords] = useState("");
   const [tone, setTone] = useState<Tone>("Professional");
+  const [extraContext, setExtraContext] = useState("");
   const [platform, setPlatform] = useState<Platform>("instagram");
 
   const [bios, setBios] = useState<string[]>([]);
