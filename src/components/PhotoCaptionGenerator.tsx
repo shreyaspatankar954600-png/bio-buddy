@@ -256,7 +256,20 @@ FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply i
       }
 
       if (platform === "instagram") setIgResult(parsed as InstagramResult);
-      else setLiResult(parsed as LinkedInResult);
+      else {
+        let li = parsed as LinkedInResult;
+        if (!useEmojis) {
+          li = {
+            professional_post: stripEmojis(li.professional_post || ""),
+            storytelling_post: stripEmojis(li.storytelling_post || ""),
+            short_post: stripEmojis(li.short_post || ""),
+            hashtags: li.hashtags || "",
+            tags: li.tags || "",
+            alt_text: li.alt_text || "",
+          };
+        }
+        setLiResult(li);
+      }
     } catch (err: any) {
       setError(err.message || "Something went wrong.");
     } finally {
