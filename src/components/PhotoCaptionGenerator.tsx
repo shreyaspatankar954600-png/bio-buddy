@@ -1,14 +1,17 @@
 import { useRef, useState } from "react";
-import { Loader2, Upload, Sparkles, Wand2, ImageIcon, X, MessageSquare, Eye } from "lucide-react";
+import { Loader2, Upload, Sparkles, Wand2, ImageIcon, X, MessageSquare, Eye, Smile } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import CaptionCard from "./CaptionCard";
 import { InstagramPreview, LinkedInPreview } from "./CaptionPlatformPreview";
 
 type CaptionPlatform = "instagram" | "linkedin";
-type CaptionTone = "Witty" | "Inspirational" | "Bold" | "Gen Z" | "Heartfelt" | "Minimal";
+type CaptionTone = "Professional" | "Witty" | "Inspirational" | "Bold" | "Gen Z" | "Heartfelt" | "Minimal";
 
 const TONES: { value: CaptionTone; emoji: string; hint: string }[] = [
+  { value: "Professional", emoji: "💼", hint: "polished & business-ready" },
   { value: "Witty", emoji: "😏", hint: "clever wordplay & humor" },
   { value: "Inspirational", emoji: "✨", hint: "uplifting & motivational" },
   { value: "Bold", emoji: "🔥", hint: "confident & punchy" },
@@ -17,8 +20,22 @@ const TONES: { value: CaptionTone; emoji: string; hint: string }[] = [
   { value: "Minimal", emoji: "🤍", hint: "short & understated" },
 ];
 
+// Strip emoji + most pictographs from a string (used when emoji toggle is OFF)
+const stripEmojis = (s: string): string =>
+  s
+    .replace(/[\p{Extended_Pictographic}\p{Emoji_Presentation}\u200d\uFE0F]/gu, "")
+    .replace(/[ \t]{2,}/g, " ")
+    .replace(/ +([,.!?;:])/g, "$1")
+    .trim();
+
 const toneInstruction = (tone: CaptionTone): string => {
   switch (tone) {
+    case "Professional":
+      return `TONE: PROFESSIONAL 💼
+- Polished, business-ready, clear, confident. Industry-aware vocabulary.
+- Structured sentences, credible voice, focus on insight, value, or achievement.
+- Avoid slang, avoid being overly casual. Active voice. End with a thoughtful CTA or reflection.
+- Example vibe: "Proud to share a milestone from this week's launch — a reminder that consistent execution compounds."`;
     case "Witty":
       return `TONE: WITTY 😏
 - Use clever wordplay, double meanings, light humor, and a punchline.
