@@ -97,7 +97,8 @@ const PhotoCaptionGenerator = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [platform, setPlatform] = useState<CaptionPlatform>("instagram");
-  const [tone, setTone] = useState<CaptionTone>("Witty");
+  const [tone, setTone] = useState<CaptionTone>("Professional");
+  const [useEmojis, setUseEmojis] = useState<boolean>(true);
   const [igResult, setIgResult] = useState<InstagramResult | null>(null);
   const [liResult, setLiResult] = useState<LinkedInResult | null>(null);
   const [igVariant, setIgVariant] = useState<"witty" | "professional" | "casual">("witty");
