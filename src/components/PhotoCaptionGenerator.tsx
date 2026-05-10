@@ -194,13 +194,18 @@ Respond ONLY with valid JSON, no markdown, no commentary. Use this EXACT schema 
 
     const baseSystemPrompt = platform === "instagram" ? instagramPrompt : linkedinPrompt;
     const contextInstruction = contextNote.trim() ? `\n\nUSER CONTEXT (real backstory to weave in): "${contextNote.trim()}"` : "";
+    const emojiInstruction = platform === "linkedin"
+      ? (useEmojis
+          ? `\n\nEMOJI POLICY: Use tasteful emojis naturally inside the post body where they enhance meaning (1-4 per post). Do NOT spam emojis.`
+          : `\n\nEMOJI POLICY (STRICT): DO NOT use ANY emojis, emoticons, or pictographs in ANY field (post body, hashtags, tags, alt_text). Plain text only. Zero emojis. If you would normally add an emoji, omit it entirely.`)
+      : "";
     // Tone is placed FIRST and as the highest-priority directive so it overrides any
     // tone-suggestive words in the schema field labels (like "professional").
     const systemPrompt = `${toneInstruction(tone)}
 
-${baseSystemPrompt}${contextInstruction}
+${baseSystemPrompt}${contextInstruction}${emojiInstruction}
 
-FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply it to EVERY text field except "hashtags", "tags", and "alt_text". The schema field names ("witty", "professional", "casual", "professional_post" etc.) describe LENGTH and FORMAT only — they are NOT additional tone instructions. Do NOT change the JSON keys or schema.`;
+FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply it to ALL THREE post variants — every text field except "hashtags", "tags", and "alt_text" must use the SAME tone. The schema field names ("witty", "professional", "casual", "professional_post" etc.) describe LENGTH and FORMAT only — they are NOT additional tone instructions. Do NOT change the JSON keys or schema.`;
 
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
