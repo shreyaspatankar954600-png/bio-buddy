@@ -73,18 +73,18 @@ const toneInstruction = (tone: CaptionTone): string => {
 };
 
 interface InstagramResult {
-  witty: string;
-  professional: string;
-  casual: string;
+  option_1: string;
+  option_2: string;
+  option_3: string;
   hashtags: string;
   tags: string;
   alt_text: string;
 }
 
 interface LinkedInResult {
-  professional_post: string;
-  storytelling_post: string;
-  short_post: string;
+  option_1: string;
+  option_2: string;
+  option_3: string;
   hashtags: string;
   tags: string;
   alt_text: string;
@@ -101,8 +101,8 @@ const PhotoCaptionGenerator = () => {
   const [useEmojis, setUseEmojis] = useState<boolean>(true);
   const [igResult, setIgResult] = useState<InstagramResult | null>(null);
   const [liResult, setLiResult] = useState<LinkedInResult | null>(null);
-  const [igVariant, setIgVariant] = useState<"witty" | "professional" | "casual">("witty");
-  const [liVariant, setLiVariant] = useState<"professional_post" | "storytelling_post" | "short_post">("professional_post");
+  const [igVariant, setIgVariant] = useState<"option_1" | "option_2" | "option_3">("option_1");
+  const [liVariant, setLiVariant] = useState<"option_1" | "option_2" | "option_3">("option_1");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = (file: File) => {
@@ -170,11 +170,18 @@ const PhotoCaptionGenerator = () => {
     // The tone block (placed at the top of systemPrompt) governs voice.
     const instagramPrompt = `You are an expert Instagram copywriter. Analyze the provided image carefully (people, mood, setting, objects, colors, vibe).
 
-Respond ONLY with valid JSON, no markdown, no commentary. Use this EXACT schema (the keys are STRUCTURAL VARIANTS, not tones — the TONE above governs all of them):
+Generate three distinct Instagram caption variations based on the image and any user context.
+ALL THREE variations MUST strictly follow the ${tone} tone defined above — no exceptions.
+- option_1 should be a STANDARD caption (balanced length, ~100-150 chars).
+- option_2 should be a NARRATIVE / story-based approach (slightly longer, sets a small scene or moment, max 150 chars).
+- option_3 should be CONCISE / PUNCHY (short, max ~80 chars, high impact).
+All three must maintain the ${tone} style and feel clearly different from each other in structure — but identical in voice.
+
+Respond ONLY with valid JSON, no markdown, no commentary. Use this EXACT schema:
 {
-  "witty": "SHORT punchy Instagram caption with a clever twist or punchline (max 150 chars, 2-3 emojis). Apply the TONE above.",
-  "professional": "MEDIUM-length Instagram caption with a bit more polish and structure (max 150 chars, 1-2 emojis). Apply the TONE above — if the tone is Gen Z, this MUST still sound Gen Z, just slightly more composed.",
-  "casual": "LAID-BACK conversational Instagram caption like talking to a friend (max 150 chars, with emojis). Apply the TONE above.",
+  "option_1": "Standard ${tone} Instagram caption (max 150 chars).",
+  "option_2": "Narrative / story-based ${tone} Instagram caption (max 150 chars).",
+  "option_3": "Concise punchy ${tone} Instagram caption (max ~80 chars).",
   "hashtags": "20-25 highly relevant Instagram hashtags space-separated, mix of niche + popular, all starting with #",
   "tags": "comma-separated suggestions of who/what to tag on Instagram (people, brands, locations visible). Use @handle format where it looks like one (e.g. '@nike, your friend, @mumbai')",
   "alt_text": "a concise descriptive alt text for accessibility (1-2 sentences, no emojis, neutral tone for accessibility)"
@@ -182,11 +189,18 @@ Respond ONLY with valid JSON, no markdown, no commentary. Use this EXACT schema 
 
     const linkedinPrompt = `You are an expert LinkedIn personal-branding copywriter. Analyze the provided image carefully (note achievements, certificates, events, people, brands, settings).
 
-Respond ONLY with valid JSON, no markdown, no commentary. Use this EXACT schema (the keys are STRUCTURAL VARIANTS — length and format only — the TONE above governs the voice of all of them):
+Generate three distinct LinkedIn post variations based on the image and any user context.
+ALL THREE variations MUST strictly follow the ${tone} tone defined above — no exceptions.
+- option_1 should be a STANDARD post (4-6 short paragraphs separated by \\n\\n, hook + context + insight + CTA).
+- option_2 should be a NARRATIVE / story-based approach (5-7 short paragraphs separated by \\n\\n, personal story arc, ends with a reflective question).
+- option_3 should be CONCISE / PUNCHY (2-3 short paragraphs separated by \\n\\n, hook + key takeaway + CTA).
+All three must maintain the ${tone} style — only the structure/length differs.
+
+Respond ONLY with valid JSON, no markdown, no commentary. Use this EXACT schema:
 {
-  "professional_post": "LONGER LinkedIn post (4-6 short paragraphs separated by \\n\\n, hook + context + insight + CTA). Apply the TONE above — if Gen Z, this is still a Gen Z post, just longer with more structure.",
-  "storytelling_post": "NARRATIVE LinkedIn post (5-7 short paragraphs separated by \\n\\n, personal story arc with hook, lessons, ends with reflective question). Apply the TONE above.",
-  "short_post": "PUNCHY short LinkedIn post (2-3 short paragraphs separated by \\n\\n, hook + key takeaway + CTA). Apply the TONE above.",
+  "option_1": "Standard ${tone} LinkedIn post.",
+  "option_2": "Narrative / story-based ${tone} LinkedIn post.",
+  "option_3": "Concise punchy ${tone} LinkedIn post.",
   "hashtags": "8-12 relevant LinkedIn hashtags space-separated, all starting with #",
   "tags": "comma-separated suggestions of who/what to tag on LinkedIn (companies, mentors, organizations, event hosts visible). Use @handle format where it looks like one (e.g. '@Microsoft, your manager, the event organizer')",
   "alt_text": "a concise descriptive alt text for accessibility (1-2 sentences, no emojis, neutral tone for accessibility)"
@@ -205,7 +219,7 @@ Respond ONLY with valid JSON, no markdown, no commentary. Use this EXACT schema 
 
 ${baseSystemPrompt}${contextInstruction}${emojiInstruction}
 
-FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply it to ALL THREE post variants — every text field except "hashtags", "tags", and "alt_text" must use the SAME tone. The schema field names ("witty", "professional", "casual", "professional_post" etc.) describe LENGTH and FORMAT only — they are NOT additional tone instructions. Do NOT change the JSON keys or schema.`;
+FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply it identically to option_1, option_2, and option_3 — they differ ONLY in structure (standard / narrative / concise), never in voice. Do NOT change the JSON keys or schema.`;
 
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -260,9 +274,9 @@ FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply i
         let li = parsed as LinkedInResult;
         if (!useEmojis) {
           li = {
-            professional_post: stripEmojis(li.professional_post || ""),
-            storytelling_post: stripEmojis(li.storytelling_post || ""),
-            short_post: stripEmojis(li.short_post || ""),
+            option_1: stripEmojis(li.option_1 || ""),
+            option_2: stripEmojis(li.option_2 || ""),
+            option_3: stripEmojis(li.option_3 || ""),
             hashtags: li.hashtags || "",
             tags: li.tags || "",
             alt_text: li.alt_text || "",
@@ -339,7 +353,12 @@ FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply i
             return (
               <button
                 key={t.value}
-                onClick={() => setTone(t.value)}
+                onClick={() => {
+                  setTone(t.value);
+                  // Clear stale results so previews always reflect the chosen tone
+                  setIgResult(null);
+                  setLiResult(null);
+                }}
                 title={t.hint}
                 className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 border ${
                   active
@@ -489,17 +508,17 @@ FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply i
               <Eye className="w-3 h-3" /> Live Instagram Previews
             </div>
             <h3 className={`text-2xl font-bold bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
-              Three styles, exactly how they'll look on Instagram
+              Three {tone} captions, exactly how they'll look on Instagram
             </h3>
-            <p className="text-sm text-muted-foreground">Compare side-by-side and copy your favorite</p>
+            <p className="text-sm text-muted-foreground">All in your selected {tone} tone — compare and copy your favorite</p>
           </div>
 
           {/* Three previews — side-by-side on desktop, stacked on mobile */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-4 items-start">
             {([
-              { key: "witty", label: "Witty", emoji: "😏" },
-              { key: "professional", label: "Professional", emoji: "💼" },
-              { key: "casual", label: "Casual", emoji: "😎" },
+              { key: "option_1", label: "Option 1", emoji: "①" },
+              { key: "option_2", label: "Option 2", emoji: "②" },
+              { key: "option_3", label: "Option 3", emoji: "③" },
             ] as const).map((v, i) => (
               <div key={v.key} className="space-y-2 animate-fade-in-up" style={{ animationDelay: `${i * 80}ms` }}>
                 <div className="flex items-center justify-center gap-1.5">
@@ -540,17 +559,17 @@ FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply i
               <Eye className="w-3 h-3" /> Live LinkedIn Previews
             </div>
             <h3 className={`text-2xl font-bold bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
-              Three post styles, exactly how they'll look on LinkedIn
+              Three {tone} posts, exactly how they'll look on LinkedIn
             </h3>
-            <p className="text-sm text-muted-foreground">Compare side-by-side and copy your favorite</p>
+            <p className="text-sm text-muted-foreground">All in your selected {tone} tone — compare and copy your favorite</p>
           </div>
 
           {/* Three previews — side-by-side on desktop, stacked on mobile */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-4 items-start">
             {([
-              { key: "professional_post", label: "Professional", emoji: "💼" },
-              { key: "storytelling_post", label: "Storytelling", emoji: "📖" },
-              { key: "short_post", label: "Short", emoji: "⚡" },
+              { key: "option_1", label: "Option 1", emoji: "①" },
+              { key: "option_2", label: "Option 2", emoji: "②" },
+              { key: "option_3", label: "Option 3", emoji: "③" },
             ] as const).map((v, i) => (
               <div key={v.key} className="space-y-2 animate-fade-in-up" style={{ animationDelay: `${i * 80}ms` }}>
                 <div className="flex items-center justify-center gap-1.5">
@@ -563,7 +582,7 @@ FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply i
                   imageUrl={imageData}
                   post={liResult[v.key]}
                   hashtags={liResult.hashtags}
-                  variant={v.key.replace("_post", "")}
+                  variant={v.label}
                 />
               </div>
             ))}
