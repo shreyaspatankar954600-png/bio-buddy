@@ -1,14 +1,17 @@
 import { useRef, useState } from "react";
-import { Loader2, Upload, Sparkles, Wand2, ImageIcon, X, MessageSquare, Eye } from "lucide-react";
+import { Loader2, Upload, Sparkles, Wand2, ImageIcon, X, MessageSquare, Eye, Smile } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import CaptionCard from "./CaptionCard";
 import { InstagramPreview, LinkedInPreview } from "./CaptionPlatformPreview";
 
 type CaptionPlatform = "instagram" | "linkedin";
-type CaptionTone = "Witty" | "Inspirational" | "Bold" | "Gen Z" | "Heartfelt" | "Minimal";
+type CaptionTone = "Professional" | "Witty" | "Inspirational" | "Bold" | "Gen Z" | "Heartfelt" | "Minimal";
 
 const TONES: { value: CaptionTone; emoji: string; hint: string }[] = [
+  { value: "Professional", emoji: "💼", hint: "polished & business-ready" },
   { value: "Witty", emoji: "😏", hint: "clever wordplay & humor" },
   { value: "Inspirational", emoji: "✨", hint: "uplifting & motivational" },
   { value: "Bold", emoji: "🔥", hint: "confident & punchy" },
@@ -17,8 +20,22 @@ const TONES: { value: CaptionTone; emoji: string; hint: string }[] = [
   { value: "Minimal", emoji: "🤍", hint: "short & understated" },
 ];
 
+// Strip emoji + most pictographs from a string (used when emoji toggle is OFF)
+const stripEmojis = (s: string): string =>
+  s
+    .replace(/[\p{Extended_Pictographic}\p{Emoji_Presentation}\u200d\uFE0F]/gu, "")
+    .replace(/[ \t]{2,}/g, " ")
+    .replace(/ +([,.!?;:])/g, "$1")
+    .trim();
+
 const toneInstruction = (tone: CaptionTone): string => {
   switch (tone) {
+    case "Professional":
+      return `TONE: PROFESSIONAL 💼
+- Polished, business-ready, clear, confident. Industry-aware vocabulary.
+- Structured sentences, credible voice, focus on insight, value, or achievement.
+- Avoid slang, avoid being overly casual. Active voice. End with a thoughtful CTA or reflection.
+- Example vibe: "Proud to share a milestone from this week's launch — a reminder that consistent execution compounds."`;
     case "Witty":
       return `TONE: WITTY 😏
 - Use clever wordplay, double meanings, light humor, and a punchline.
@@ -80,7 +97,8 @@ const PhotoCaptionGenerator = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [platform, setPlatform] = useState<CaptionPlatform>("instagram");
-  const [tone, setTone] = useState<CaptionTone>("Witty");
+  const [tone, setTone] = useState<CaptionTone>("Professional");
+  const [useEmojis, setUseEmojis] = useState<boolean>(true);
   const [igResult, setIgResult] = useState<InstagramResult | null>(null);
   const [liResult, setLiResult] = useState<LinkedInResult | null>(null);
   const [igVariant, setIgVariant] = useState<"witty" | "professional" | "casual">("witty");
@@ -176,13 +194,18 @@ Respond ONLY with valid JSON, no markdown, no commentary. Use this EXACT schema 
 
     const baseSystemPrompt = platform === "instagram" ? instagramPrompt : linkedinPrompt;
     const contextInstruction = contextNote.trim() ? `\n\nUSER CONTEXT (real backstory to weave in): "${contextNote.trim()}"` : "";
+    const emojiInstruction = platform === "linkedin"
+      ? (useEmojis
+          ? `\n\nEMOJI POLICY: Use tasteful emojis naturally inside the post body where they enhance meaning (1-4 per post). Do NOT spam emojis.`
+          : `\n\nEMOJI POLICY (STRICT): DO NOT use ANY emojis, emoticons, or pictographs in ANY field (post body, hashtags, tags, alt_text). Plain text only. Zero emojis. If you would normally add an emoji, omit it entirely.`)
+      : "";
     // Tone is placed FIRST and as the highest-priority directive so it overrides any
     // tone-suggestive words in the schema field labels (like "professional").
     const systemPrompt = `${toneInstruction(tone)}
 
-${baseSystemPrompt}${contextInstruction}
+${baseSystemPrompt}${contextInstruction}${emojiInstruction}
 
-FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply it to EVERY text field except "hashtags", "tags", and "alt_text". The schema field names ("witty", "professional", "casual", "professional_post" etc.) describe LENGTH and FORMAT only — they are NOT additional tone instructions. Do NOT change the JSON keys or schema.`;
+FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply it to ALL THREE post variants — every text field except "hashtags", "tags", and "alt_text" must use the SAME tone. The schema field names ("witty", "professional", "casual", "professional_post" etc.) describe LENGTH and FORMAT only — they are NOT additional tone instructions. Do NOT change the JSON keys or schema.`;
 
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -233,7 +256,20 @@ FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply i
       }
 
       if (platform === "instagram") setIgResult(parsed as InstagramResult);
-      else setLiResult(parsed as LinkedInResult);
+      else {
+        let li = parsed as LinkedInResult;
+        if (!useEmojis) {
+          li = {
+            professional_post: stripEmojis(li.professional_post || ""),
+            storytelling_post: stripEmojis(li.storytelling_post || ""),
+            short_post: stripEmojis(li.short_post || ""),
+            hashtags: li.hashtags || "",
+            tags: li.tags || "",
+            alt_text: li.alt_text || "",
+          };
+        }
+        setLiResult(li);
+      }
     } catch (err: any) {
       setError(err.message || "Something went wrong.");
     } finally {
@@ -346,6 +382,27 @@ FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply i
           {contextNote.trim() ? `✨ AI will weave "${contextNote.trim().slice(0, 30)}${contextNote.trim().length > 30 ? '...' : ''}" into your captions` : "Leave empty for general captions based on image alone"}
         </p>
       </div>
+
+      {/* Emoji Toggle (LinkedIn only) */}
+      {!isInstagram && (
+        <div
+          className="animate-fade-in-up flex items-center justify-center gap-3 glass rounded-xl px-4 py-3 max-w-md mx-auto"
+          style={{ animationDelay: "145ms" }}
+        >
+          <Smile className={`w-4 h-4 ${useEmojis ? "text-blue-500" : "text-muted-foreground"}`} />
+          <Label htmlFor="li-emoji-toggle" className="text-sm font-semibold cursor-pointer flex-1">
+            Use emojis in posts
+            <span className="block text-[11px] font-normal text-muted-foreground">
+              {useEmojis ? "Posts will include tasteful emojis" : "Plain text — no emojis at all"}
+            </span>
+          </Label>
+          <Switch
+            id="li-emoji-toggle"
+            checked={useEmojis}
+            onCheckedChange={setUseEmojis}
+          />
+        </div>
+      )}
 
       <div className="animate-fade-in-up glass-strong rounded-2xl p-5 sm:p-7 space-y-5" style={{ animationDelay: "150ms" }}>
         {!imageData ? (
