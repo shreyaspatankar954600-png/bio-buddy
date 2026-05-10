@@ -383,6 +383,27 @@ FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply i
         </p>
       </div>
 
+      {/* Emoji Toggle (LinkedIn only) */}
+      {!isInstagram && (
+        <div
+          className="animate-fade-in-up flex items-center justify-center gap-3 glass rounded-xl px-4 py-3 max-w-md mx-auto"
+          style={{ animationDelay: "145ms" }}
+        >
+          <Smile className={`w-4 h-4 ${useEmojis ? "text-blue-500" : "text-muted-foreground"}`} />
+          <Label htmlFor="li-emoji-toggle" className="text-sm font-semibold cursor-pointer flex-1">
+            Use emojis in posts
+            <span className="block text-[11px] font-normal text-muted-foreground">
+              {useEmojis ? "Posts will include tasteful emojis" : "Plain text — no emojis at all"}
+            </span>
+          </Label>
+          <Switch
+            id="li-emoji-toggle"
+            checked={useEmojis}
+            onCheckedChange={setUseEmojis}
+          />
+        </div>
+      )}
+
       <div className="animate-fade-in-up glass-strong rounded-2xl p-5 sm:p-7 space-y-5" style={{ animationDelay: "150ms" }}>
         {!imageData ? (
           <label
