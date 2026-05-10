@@ -353,7 +353,12 @@ FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply i
             return (
               <button
                 key={t.value}
-                onClick={() => setTone(t.value)}
+                onClick={() => {
+                  setTone(t.value);
+                  // Clear stale results so previews always reflect the chosen tone
+                  setIgResult(null);
+                  setLiResult(null);
+                }}
                 title={t.hint}
                 className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 border ${
                   active
