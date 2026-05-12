@@ -127,6 +127,7 @@ export const InstagramPreview = ({
           <><Copy className="w-3.5 h-3.5" /> Copy {variant} caption</>
         )}
       </button>
+      </div>
     </div>
   );
 };
