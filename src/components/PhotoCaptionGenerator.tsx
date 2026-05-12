@@ -514,7 +514,7 @@ FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply i
           </div>
 
           {/* Three previews — side-by-side on desktop, stacked on mobile */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-4 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-4 items-stretch auto-rows-fr">
             {([
               { key: "option_1", label: "Option 1", emoji: "①" },
               { key: "option_2", label: "Option 2", emoji: "②" },
@@ -565,7 +565,7 @@ FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply i
           </div>
 
           {/* Three previews — side-by-side on desktop, stacked on mobile */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-4 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-4 items-stretch auto-rows-fr">
             {([
               { key: "option_1", label: "Option 1", emoji: "①" },
               { key: "option_2", label: "Option 2", emoji: "②" },
