@@ -217,9 +217,11 @@ Respond ONLY with valid JSON, no markdown, no commentary. Use this EXACT schema:
     // tone-suggestive words in the schema field labels (like "professional").
     const systemPrompt = `${toneInstruction(tone)}
 
+LANGUAGE: ALL output MUST be in English only. Never use any other language under any circumstance.
+
 ${baseSystemPrompt}${contextInstruction}${emojiInstruction}
 
-FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply it identically to option_1, option_2, and option_3 — they differ ONLY in structure (standard / narrative / concise), never in voice. Do NOT change the JSON keys or schema.`;
+FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply it identically to option_1, option_2, and option_3 — they differ ONLY in structure (standard / narrative / concise), never in voice. Do NOT change the JSON keys or schema. Output language: English only.`;
 
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -514,25 +516,27 @@ FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply i
           </div>
 
           {/* Three previews — side-by-side on desktop, stacked on mobile */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-4 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-4 items-stretch auto-rows-fr">
             {([
               { key: "option_1", label: "Option 1", emoji: "①" },
               { key: "option_2", label: "Option 2", emoji: "②" },
               { key: "option_3", label: "Option 3", emoji: "③" },
             ] as const).map((v, i) => (
-              <div key={v.key} className="space-y-2 animate-fade-in-up" style={{ animationDelay: `${i * 80}ms` }}>
+              <div key={v.key} className="space-y-2 animate-fade-in-up h-full flex flex-col" style={{ animationDelay: `${i * 80}ms` }}>
                 <div className="flex items-center justify-center gap-1.5">
                   <span className="text-lg">{v.emoji}</span>
                   <span className="text-sm font-bold bg-gradient-to-r from-pink-500 to-fuchsia-500 bg-clip-text text-transparent uppercase tracking-wider">
                     {v.label}
                   </span>
                 </div>
-                <InstagramPreview
-                  imageUrl={imageData}
-                  caption={igResult[v.key]}
-                  hashtags={igResult.hashtags}
-                  variant={v.key}
-                />
+                <div className="flex-1 flex">
+                  <InstagramPreview
+                    imageUrl={imageData}
+                    caption={igResult[v.key]}
+                    hashtags={igResult.hashtags}
+                    variant={v.key}
+                  />
+                </div>
               </div>
             ))}
           </div>
@@ -565,25 +569,27 @@ FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply i
           </div>
 
           {/* Three previews — side-by-side on desktop, stacked on mobile */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-4 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-4 items-stretch auto-rows-fr">
             {([
               { key: "option_1", label: "Option 1", emoji: "①" },
               { key: "option_2", label: "Option 2", emoji: "②" },
               { key: "option_3", label: "Option 3", emoji: "③" },
             ] as const).map((v, i) => (
-              <div key={v.key} className="space-y-2 animate-fade-in-up" style={{ animationDelay: `${i * 80}ms` }}>
+              <div key={v.key} className="space-y-2 animate-fade-in-up h-full flex flex-col" style={{ animationDelay: `${i * 80}ms` }}>
                 <div className="flex items-center justify-center gap-1.5">
                   <span className="text-lg">{v.emoji}</span>
                   <span className="text-sm font-bold bg-gradient-to-r from-sky-600 to-blue-700 bg-clip-text text-transparent uppercase tracking-wider">
                     {v.label}
                   </span>
                 </div>
-                <LinkedInPreview
-                  imageUrl={imageData}
-                  post={liResult[v.key]}
-                  hashtags={liResult.hashtags}
-                  variant={v.label}
-                />
+                <div className="flex-1 flex">
+                  <LinkedInPreview
+                    imageUrl={imageData}
+                    post={liResult[v.key]}
+                    hashtags={liResult.hashtags}
+                    variant={v.label}
+                  />
+                </div>
               </div>
             ))}
           </div>

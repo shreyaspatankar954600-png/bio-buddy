@@ -24,11 +24,11 @@ const PlatformPreview = ({ bio, name, profession, platform, delay = 0 }: Platfor
   if (platform === "instagram") {
     return (
       <div
-        className="w-full max-w-[280px] sm:max-w-[280px] mx-auto group"
+        className="w-full max-w-[280px] sm:max-w-[280px] mx-auto group h-full flex flex-col"
         style={{ animationDelay: `${delay}ms` }}
       >
         {/* Phone frame - clean white like real IG */}
-        <div className="rounded-[2.2rem] border-[3px] border-foreground/8 bg-card overflow-hidden shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-1.5 hover:glow-instagram">
+        <div className="rounded-[2.2rem] border-[3px] border-foreground/8 bg-card overflow-hidden shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-1.5 hover:glow-instagram flex-1 flex flex-col">
           {/* Status bar */}
           <div className="flex items-center justify-between px-5 pt-2 pb-0.5 bg-card">
             <span className="text-[10px] font-semibold text-foreground">11:29</span>
@@ -63,7 +63,7 @@ const PlatformPreview = ({ bio, name, profession, platform, delay = 0 }: Platfor
                 <span className="text-2xl font-semibold text-foreground/60">{displayName.charAt(0).toUpperCase()}</span>
               </div>
               <div className="flex flex-1 justify-around">
-                {[["5", "post"], ["176", "follower"], ["121", "following"]].map(([num, label]) => (
+                {[["5", "Posts"], ["176", "Followers"], ["121", "Following"]].map(([num, label]) => (
                   <div key={label} className="text-center">
                     <p className="text-sm font-bold text-foreground leading-tight">{num}</p>
                     <p className="text-[10px] text-foreground/60 leading-tight">{label}</p>
@@ -85,7 +85,7 @@ const PlatformPreview = ({ bio, name, profession, platform, delay = 0 }: Platfor
 
             {/* Edit profile button like real IG */}
             <div className="flex gap-1.5 mt-2.5">
-              <button className="flex-1 bg-secondary text-secondary-foreground text-[11px] font-semibold py-1.5 rounded-lg">Modifica profilo</button>
+              <button className="flex-1 bg-secondary text-secondary-foreground text-[11px] font-semibold py-1.5 rounded-lg">Edit Profile</button>
               <button className="w-8 bg-secondary text-secondary-foreground text-[11px] font-semibold py-1.5 rounded-lg flex items-center justify-center">
                 <Users className="w-3.5 h-3.5" />
               </button>
@@ -145,10 +145,10 @@ const PlatformPreview = ({ bio, name, profession, platform, delay = 0 }: Platfor
   // LinkedIn preview - matches reference: banner, round avatar overlapping, name + headline + location + connections, then buttons, then About
   return (
     <div
-      className="w-full max-w-[340px] sm:max-w-[340px] mx-auto group"
+      className="w-full max-w-[340px] sm:max-w-[340px] mx-auto group h-full flex flex-col"
       style={{ animationDelay: `${delay}ms` }}
     >
-      <div className="rounded-2xl border border-border/50 bg-card overflow-hidden shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-1.5 hover:glow-linkedin">
+      <div className="rounded-2xl border border-border/50 bg-card overflow-visible shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-1.5 hover:glow-linkedin flex-1 flex flex-col">
         {/* Banner - muted gradient like real LinkedIn */}
         <div className="h-20 relative overflow-hidden" style={{ background: "linear-gradient(135deg, hsl(200 15% 75%), hsl(200 20% 82%), hsl(200 10% 70%))" }}>
         </div>

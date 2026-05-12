@@ -95,7 +95,7 @@ const Index = () => {
       ? ` Extra context to weave in naturally (do NOT quote it verbatim, integrate it): "${extraContext.trim()}".`
       : "";
 
-    const prompt = `Generate exactly 3 bio variations for ${platform} for a person named ${name} who is a ${profession}. Keywords: ${keywords || "none"}. ${toneInstruction}${contextLine} Format: return only the 3 bios, numbered 1, 2, 3. For Instagram keep each under 150 characters. For LinkedIn keep each under 220 characters.`;
+    const prompt = `Generate exactly 3 bio variations IN ENGLISH ONLY for ${platform} for a person named ${name} who is a ${profession}. Keywords: ${keywords || "none"}. ${toneInstruction}${contextLine} Format: return only the 3 bios, numbered 1, 2, 3. For Instagram keep each under 150 characters. For LinkedIn keep each under 220 characters. Output language: English only — never any other language.`;
 
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -390,11 +390,11 @@ const Index = () => {
                   <p className="text-center text-xs text-muted-foreground mt-3">← Swipe to see all bios →</p>
                 </Carousel>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-4 auto-rows-fr items-stretch">
                   {bios.map((bio, i) => (
                     <div
                       key={i}
-                      className="animate-fade-in-up space-y-2"
+                      className="animate-fade-in-up space-y-2 h-full flex flex-col"
                       style={{ animationDelay: `${i * 150}ms` }}
                     >
                       <span className={`block text-center text-xs font-bold uppercase tracking-wider ${
@@ -402,13 +402,15 @@ const Index = () => {
                       }`}>
                         Option {i + 1}
                       </span>
-                      <PlatformPreview
-                        bio={bio}
-                        name={name}
-                        profession={profession}
-                        platform={platform}
-                        delay={i * 150}
-                      />
+                      <div className="flex-1 flex">
+                        <PlatformPreview
+                          bio={bio}
+                          name={name}
+                          profession={profession}
+                          platform={platform}
+                          delay={i * 100}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
