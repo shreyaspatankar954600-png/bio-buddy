@@ -24,11 +24,11 @@ const PlatformPreview = ({ bio, name, profession, platform, delay = 0 }: Platfor
   if (platform === "instagram") {
     return (
       <div
-        className="w-full max-w-[280px] sm:max-w-[280px] mx-auto group"
+        className="w-full max-w-[280px] sm:max-w-[280px] mx-auto group h-full flex flex-col"
         style={{ animationDelay: `${delay}ms` }}
       >
         {/* Phone frame - clean white like real IG */}
-        <div className="rounded-[2.2rem] border-[3px] border-foreground/8 bg-card overflow-hidden shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-1.5 hover:glow-instagram">
+        <div className="rounded-[2.2rem] border-[3px] border-foreground/8 bg-card overflow-hidden shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-1.5 hover:glow-instagram flex-1 flex flex-col">
           {/* Status bar */}
           <div className="flex items-center justify-between px-5 pt-2 pb-0.5 bg-card">
             <span className="text-[10px] font-semibold text-foreground">11:29</span>
@@ -145,10 +145,10 @@ const PlatformPreview = ({ bio, name, profession, platform, delay = 0 }: Platfor
   // LinkedIn preview - matches reference: banner, round avatar overlapping, name + headline + location + connections, then buttons, then About
   return (
     <div
-      className="w-full max-w-[340px] sm:max-w-[340px] mx-auto group"
+      className="w-full max-w-[340px] sm:max-w-[340px] mx-auto group h-full flex flex-col"
       style={{ animationDelay: `${delay}ms` }}
     >
-      <div className="rounded-2xl border border-border/50 bg-card overflow-hidden shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-1.5 hover:glow-linkedin">
+      <div className="rounded-2xl border border-border/50 bg-card overflow-visible shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-1.5 hover:glow-linkedin flex-1 flex flex-col">
         {/* Banner - muted gradient like real LinkedIn */}
         <div className="h-20 relative overflow-hidden" style={{ background: "linear-gradient(135deg, hsl(200 15% 75%), hsl(200 20% 82%), hsl(200 10% 70%))" }}>
         </div>
