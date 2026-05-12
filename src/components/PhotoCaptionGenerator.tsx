@@ -520,19 +520,21 @@ FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply i
               { key: "option_2", label: "Option 2", emoji: "②" },
               { key: "option_3", label: "Option 3", emoji: "③" },
             ] as const).map((v, i) => (
-              <div key={v.key} className="space-y-2 animate-fade-in-up" style={{ animationDelay: `${i * 80}ms` }}>
+              <div key={v.key} className="space-y-2 animate-fade-in-up h-full flex flex-col" style={{ animationDelay: `${i * 80}ms` }}>
                 <div className="flex items-center justify-center gap-1.5">
                   <span className="text-lg">{v.emoji}</span>
                   <span className="text-sm font-bold bg-gradient-to-r from-pink-500 to-fuchsia-500 bg-clip-text text-transparent uppercase tracking-wider">
                     {v.label}
                   </span>
                 </div>
-                <InstagramPreview
-                  imageUrl={imageData}
-                  caption={igResult[v.key]}
-                  hashtags={igResult.hashtags}
-                  variant={v.key}
-                />
+                <div className="flex-1 flex">
+                  <InstagramPreview
+                    imageUrl={imageData}
+                    caption={igResult[v.key]}
+                    hashtags={igResult.hashtags}
+                    variant={v.key}
+                  />
+                </div>
               </div>
             ))}
           </div>
@@ -571,19 +573,21 @@ FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply i
               { key: "option_2", label: "Option 2", emoji: "②" },
               { key: "option_3", label: "Option 3", emoji: "③" },
             ] as const).map((v, i) => (
-              <div key={v.key} className="space-y-2 animate-fade-in-up" style={{ animationDelay: `${i * 80}ms` }}>
+              <div key={v.key} className="space-y-2 animate-fade-in-up h-full flex flex-col" style={{ animationDelay: `${i * 80}ms` }}>
                 <div className="flex items-center justify-center gap-1.5">
                   <span className="text-lg">{v.emoji}</span>
                   <span className="text-sm font-bold bg-gradient-to-r from-sky-600 to-blue-700 bg-clip-text text-transparent uppercase tracking-wider">
                     {v.label}
                   </span>
                 </div>
-                <LinkedInPreview
-                  imageUrl={imageData}
-                  post={liResult[v.key]}
-                  hashtags={liResult.hashtags}
-                  variant={v.label}
-                />
+                <div className="flex-1 flex">
+                  <LinkedInPreview
+                    imageUrl={imageData}
+                    post={liResult[v.key]}
+                    hashtags={liResult.hashtags}
+                    variant={v.label}
+                  />
+                </div>
               </div>
             ))}
           </div>
