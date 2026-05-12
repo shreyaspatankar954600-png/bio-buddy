@@ -217,9 +217,11 @@ Respond ONLY with valid JSON, no markdown, no commentary. Use this EXACT schema:
     // tone-suggestive words in the schema field labels (like "professional").
     const systemPrompt = `${toneInstruction(tone)}
 
+LANGUAGE: ALL output MUST be in English only. Never use any other language under any circumstance.
+
 ${baseSystemPrompt}${contextInstruction}${emojiInstruction}
 
-FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply it identically to option_1, option_2, and option_3 — they differ ONLY in structure (standard / narrative / concise), never in voice. Do NOT change the JSON keys or schema.`;
+FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply it identically to option_1, option_2, and option_3 — they differ ONLY in structure (standard / narrative / concise), never in voice. Do NOT change the JSON keys or schema. Output language: English only.`;
 
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
