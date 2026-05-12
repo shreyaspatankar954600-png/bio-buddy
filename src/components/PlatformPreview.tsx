@@ -63,7 +63,7 @@ const PlatformPreview = ({ bio, name, profession, platform, delay = 0 }: Platfor
                 <span className="text-2xl font-semibold text-foreground/60">{displayName.charAt(0).toUpperCase()}</span>
               </div>
               <div className="flex flex-1 justify-around">
-                {[["5", "post"], ["176", "follower"], ["121", "following"]].map(([num, label]) => (
+                {[["5", "Posts"], ["176", "Followers"], ["121", "Following"]].map(([num, label]) => (
                   <div key={label} className="text-center">
                     <p className="text-sm font-bold text-foreground leading-tight">{num}</p>
                     <p className="text-[10px] text-foreground/60 leading-tight">{label}</p>
@@ -85,7 +85,7 @@ const PlatformPreview = ({ bio, name, profession, platform, delay = 0 }: Platfor
 
             {/* Edit profile button like real IG */}
             <div className="flex gap-1.5 mt-2.5">
-              <button className="flex-1 bg-secondary text-secondary-foreground text-[11px] font-semibold py-1.5 rounded-lg">Modifica profilo</button>
+              <button className="flex-1 bg-secondary text-secondary-foreground text-[11px] font-semibold py-1.5 rounded-lg">Edit Profile</button>
               <button className="w-8 bg-secondary text-secondary-foreground text-[11px] font-semibold py-1.5 rounded-lg flex items-center justify-center">
                 <Users className="w-3.5 h-3.5" />
               </button>
