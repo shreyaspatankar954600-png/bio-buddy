@@ -18,7 +18,7 @@ const Header = ({ darkMode, onToggleDark, hasApiKey, onApiKeySave }: HeaderProps
             <div className="absolute inset-0 bg-accent/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
           <h1 className="text-xl font-extrabold text-foreground tracking-tight">
-            BioGen
+            BioDraft
           </h1>
           <span className="hidden sm:inline-flex text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-accent/10 text-accent">
             AI

@@ -10,7 +10,7 @@ const Footer = () => (
         </p>
         <p className="text-xs text-muted-foreground/70 flex items-center gap-1">
           <Sparkles className="w-3 h-3" />
-          <span className="font-semibold text-foreground/80">BioGen</span> — Free Forever
+          <span className="font-semibold text-foreground/80">BioDraft</span> — Free Forever
         </p>
       </div>
     </div>

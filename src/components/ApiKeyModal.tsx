@@ -87,7 +87,7 @@ const ApiKeyModal = ({ hasKey, onSave }: ApiKeyModalProps) => {
             </li>
             <li className="flex gap-2.5">
               <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">3</span>
-              <span>Click <strong>"Create API Key"</strong>, give it a name (e.g. "BioGen"), and copy the generated key.</span>
+              <span>Click <strong>"Create API Key"</strong>, give it a name (e.g. "BioDraft"), and copy the generated key.</span>
             </li>
             <li className="flex gap-2.5">
               <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">4</span>
