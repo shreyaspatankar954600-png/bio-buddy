@@ -6,6 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import CaptionCard from "./CaptionCard";
 import { InstagramPreview, LinkedInPreview } from "./CaptionPlatformPreview";
+import { callGenerate } from "@/lib/generate";
 
 type CaptionPlatform = "instagram" | "linkedin";
 type CaptionTone = "Professional" | "Witty" | "Inspirational" | "Bold" | "Gen Z" | "Heartfelt" | "Minimal";
@@ -151,11 +152,6 @@ const PhotoCaptionGenerator = () => {
   };
 
   const generate = async () => {
-    const apiKey = localStorage.getItem("groq_api_key");
-    if (!apiKey) {
-      setError("Please add your Groq API key first (click the API Key button in the header).");
-      return;
-    }
     if (!imageData) {
       setError("Please upload an image first.");
       return;
@@ -166,8 +162,6 @@ const PhotoCaptionGenerator = () => {
     setIgResult(null);
     setLiResult(null);
 
-    // Tone-aware prompts: schema fields describe LENGTH/FORMAT only.
-    // The tone block (placed at the top of systemPrompt) governs voice.
     const instagramPrompt = `You are an expert Instagram copywriter. Analyze the provided image carefully (people, mood, setting, objects, colors, vibe).
 
 Generate three distinct Instagram caption variations based on the image and any user context.
@@ -183,17 +177,17 @@ Respond ONLY with valid JSON, no markdown, no commentary. Use this EXACT schema:
   "option_2": "Narrative / story-based ${tone} Instagram caption (max 150 chars).",
   "option_3": "Concise punchy ${tone} Instagram caption (max ~80 chars).",
   "hashtags": "20-25 highly relevant Instagram hashtags space-separated, mix of niche + popular, all starting with #",
-  "tags": "comma-separated suggestions of who/what to tag on Instagram (people, brands, locations visible). Use @handle format where it looks like one (e.g. '@nike, your friend, @mumbai')",
-  "alt_text": "a concise descriptive alt text for accessibility (1-2 sentences, no emojis, neutral tone for accessibility)"
+  "tags": "comma-separated suggestions of who/what to tag on Instagram",
+  "alt_text": "a concise descriptive alt text for accessibility (1-2 sentences, no emojis)"
 }`;
 
-    const linkedinPrompt = `You are an expert LinkedIn personal-branding copywriter. Analyze the provided image carefully (note achievements, certificates, events, people, brands, settings).
+    const linkedinPrompt = `You are an expert LinkedIn personal-branding copywriter. Analyze the provided image carefully.
 
 Generate three distinct LinkedIn post variations based on the image and any user context.
 ALL THREE variations MUST strictly follow the ${tone} tone defined above — no exceptions.
-- option_1 should be a STANDARD post (4-6 short paragraphs separated by \\n\\n, hook + context + insight + CTA).
-- option_2 should be a NARRATIVE / story-based approach (5-7 short paragraphs separated by \\n\\n, personal story arc, ends with a reflective question).
-- option_3 should be CONCISE / PUNCHY (2-3 short paragraphs separated by \\n\\n, hook + key takeaway + CTA).
+- option_1 should be a STANDARD post (4-6 short paragraphs separated by \\n\\n).
+- option_2 should be a NARRATIVE / story-based approach (5-7 short paragraphs separated by \\n\\n).
+- option_3 should be CONCISE / PUNCHY (2-3 short paragraphs separated by \\n\\n).
 All three must maintain the ${tone} style — only the structure/length differs.
 
 Respond ONLY with valid JSON, no markdown, no commentary. Use this EXACT schema:
@@ -202,65 +196,47 @@ Respond ONLY with valid JSON, no markdown, no commentary. Use this EXACT schema:
   "option_2": "Narrative / story-based ${tone} LinkedIn post.",
   "option_3": "Concise punchy ${tone} LinkedIn post.",
   "hashtags": "8-12 relevant LinkedIn hashtags space-separated, all starting with #",
-  "tags": "comma-separated suggestions of who/what to tag on LinkedIn (companies, mentors, organizations, event hosts visible). Use @handle format where it looks like one (e.g. '@Microsoft, your manager, the event organizer')",
-  "alt_text": "a concise descriptive alt text for accessibility (1-2 sentences, no emojis, neutral tone for accessibility)"
+  "tags": "comma-separated suggestions of who/what to tag on LinkedIn",
+  "alt_text": "a concise descriptive alt text for accessibility (1-2 sentences, no emojis)"
 }`;
 
     const baseSystemPrompt = platform === "instagram" ? instagramPrompt : linkedinPrompt;
-    const contextInstruction = contextNote.trim() ? `\n\nUSER CONTEXT (real backstory to weave in): "${contextNote.trim()}"` : "";
+    const contextInstruction = contextNote.trim() ? `\n\nUSER CONTEXT: "${contextNote.trim()}"` : "";
     const emojiInstruction = platform === "linkedin"
       ? (useEmojis
-          ? `\n\nEMOJI POLICY: Use tasteful emojis naturally inside the post body where they enhance meaning (1-4 per post). Do NOT spam emojis.`
-          : `\n\nEMOJI POLICY (STRICT): DO NOT use ANY emojis, emoticons, or pictographs in ANY field (post body, hashtags, tags, alt_text). Plain text only. Zero emojis. If you would normally add an emoji, omit it entirely.`)
+          ? `\n\nEMOJI POLICY: Use tasteful emojis naturally inside the post body where they enhance meaning (1-4 per post).`
+          : `\n\nEMOJI POLICY (STRICT): DO NOT use ANY emojis, emoticons, or pictographs in ANY field. Plain text only.`)
       : "";
-    // Tone is placed FIRST and as the highest-priority directive so it overrides any
-    // tone-suggestive words in the schema field labels (like "professional").
     const systemPrompt = `${toneInstruction(tone)}
 
-LANGUAGE: ALL output MUST be in English only. Never use any other language under any circumstance.
+LANGUAGE: ALL output MUST be in English only.
 
 ${baseSystemPrompt}${contextInstruction}${emojiInstruction}
 
-FINAL REMINDER: The TONE at the top of this prompt is your #1 directive. Apply it identically to option_1, option_2, and option_3 — they differ ONLY in structure (standard / narrative / concise), never in voice. Do NOT change the JSON keys or schema. Output language: English only.`;
+FINAL REMINDER: TONE is your #1 directive. Apply it identically to option_1/2/3. Output language: English only.`;
 
     try {
-      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: "meta-llama/llama-4-scout-17b-16e-instruct",
-          messages: [
-            {
-              role: "system",
-              content: tone === "Gen Z"
-                ? "You are a chronically-online Gen Z creator (born 1997-2012). You write everything in Gen Z slang, lowercase, with internet humor. You NEVER write corporate, polished, or millennial-sounding copy. Even when asked to be 'professional', you stay Gen Z — just slightly more structured."
-                : `You are a creative copywriter who strictly follows tone instructions. The user's chosen tone takes priority over field labels.`,
-            },
-            {
-              role: "user",
-              content: [
-                { type: "text", text: systemPrompt },
-                { type: "image_url", image_url: { url: imageData } },
-              ],
-            },
-          ],
-          temperature: tone === "Gen Z" ? 1.0 : 0.85,
-          max_tokens: 1500,
-          response_format: { type: "json_object" },
-        }),
+      const text = await callGenerate({
+        model: "meta-llama/llama-4-scout-17b-16e-instruct",
+        messages: [
+          {
+            role: "system",
+            content: tone === "Gen Z"
+              ? "You are a chronically-online Gen Z creator. You write everything in Gen Z slang, lowercase, with internet humor."
+              : `You are a creative copywriter who strictly follows tone instructions.`,
+          },
+          {
+            role: "user",
+            content: [
+              { type: "text", text: systemPrompt },
+              { type: "image_url", image_url: { url: imageData } },
+            ],
+          },
+        ],
+        temperature: tone === "Gen Z" ? 1.0 : 0.85,
+        max_tokens: 1500,
+        response_format: { type: "json_object" },
       });
-
-      if (!res.ok) {
-        const errData = await res.json().catch(() => null);
-        throw new Error(errData?.error?.message || `API error: ${res.status}`);
-      }
-
-      const data = await res.json();
-      const text = data.choices?.[0]?.message?.content;
-      if (!text) throw new Error("No response from the API.");
 
       let parsed: any;
       try {
