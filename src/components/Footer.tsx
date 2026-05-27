@@ -1,8 +1,8 @@
 import { Zap, Twitter, MessageCircle } from "lucide-react";
 
-const SHARE_URL = "https://bio--buddy.vercel.app";
+const SHARE_URL = "https://biodraft.vercel.app";
 const SHARE_TEXT =
-  "Just generated my perfect bio with BioDraft — free AI bio generator for Instagram & LinkedIn. Try it:";
+  "Just generated my perfect bio using BioDraft — free AI tool for Instagram and LinkedIn! Try it free:";
 
 const Footer = () => (
   <footer className="relative mt-12 border-t border-border/40">
