@@ -393,6 +393,7 @@ Respond ONLY with valid JSON, no markdown:
                     <><Sparkles className="w-5 h-5" /><span className="ml-2">Generate My Bio</span></>
                   )}
                 </Button>
+                <GenerationMeter kind="bio" />
               </div>
 
               {/* Loading skeleton */}
