@@ -13,8 +13,10 @@ import PlatformPreview from "@/components/PlatformPreview";
 import Testimonials from "@/components/Testimonials";
 import FloatingParticles from "@/components/FloatingParticles";
 import PhotoCaptionGenerator from "@/components/PhotoCaptionGenerator";
+import GenerationMeter from "@/components/GenerationMeter";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { callGenerate } from "@/lib/generate";
+import { useAuth } from "@/contexts/AuthContext";
 
 type Platform = "instagram" | "linkedin";
 type Mode = "bio" | "caption";
@@ -46,6 +48,7 @@ const Index = () => {
   const [darkMode, setDarkMode] = useState(true);
   const [mode, setMode] = useState<Mode>("bio");
   const isMobile = useIsMobile();
+  const { canGenerate, recordGeneration, openLimit } = useAuth();
 
   const [name, setName] = useState("");
   const [profession, setProfession] = useState("");
@@ -120,6 +123,10 @@ Respond ONLY with valid JSON, no markdown:
       setTimeout(() => setShake(false), 600);
       return;
     }
+    if (!canGenerate("bio").ok) {
+      openLimit("bio");
+      return;
+    }
     setLoading(true);
     setError("");
     setBios([]);
@@ -136,6 +143,7 @@ Respond ONLY with valid JSON, no markdown:
       const { bios, feedback } = parseJSON(text);
       setBios(bios);
       setFeedback(feedback);
+      recordGeneration("bio");
     } catch (err: any) {
       setError(err.message || "Something went wrong.");
     } finally {
@@ -385,6 +393,7 @@ Respond ONLY with valid JSON, no markdown:
                     <><Sparkles className="w-5 h-5" /><span className="ml-2">Generate My Bio</span></>
                   )}
                 </Button>
+                <GenerationMeter kind="bio" />
               </div>
 
               {/* Loading skeleton */}

@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import CaptionCard from "./CaptionCard";
 import { InstagramPreview, LinkedInPreview } from "./CaptionPlatformPreview";
 import { callGenerate } from "@/lib/generate";
+import { useAuth } from "@/contexts/AuthContext";
+import GenerationMeter from "./GenerationMeter";
 
 type CaptionPlatform = "instagram" | "linkedin";
 type CaptionTone = "Professional" | "Witty" | "Inspirational" | "Bold" | "Gen Z" | "Heartfelt" | "Minimal";
@@ -105,6 +107,7 @@ const PhotoCaptionGenerator = () => {
   const [igVariant, setIgVariant] = useState<"option_1" | "option_2" | "option_3">("option_1");
   const [liVariant, setLiVariant] = useState<"option_1" | "option_2" | "option_3">("option_1");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { canGenerate, recordGeneration, openLimit } = useAuth();
 
   const handleFile = (file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -154,6 +157,10 @@ const PhotoCaptionGenerator = () => {
   const generate = async () => {
     if (!imageData) {
       setError("Please upload an image first.");
+      return;
+    }
+    if (!canGenerate("caption").ok) {
+      openLimit("caption");
       return;
     }
 
@@ -262,6 +269,7 @@ FINAL REMINDER: TONE is your #1 directive. Apply it identically to option_1/2/3.
         }
         setLiResult(li);
       }
+      recordGeneration("caption");
     } catch (err: any) {
       setError(err.message || "Something went wrong.");
     } finally {
@@ -465,6 +473,7 @@ FINAL REMINDER: TONE is your #1 directive. Apply it identically to option_1/2/3.
             </>
           )}
         </Button>
+        <GenerationMeter kind="caption" />
       </div>
 
       {/* Loading skeleton */}
