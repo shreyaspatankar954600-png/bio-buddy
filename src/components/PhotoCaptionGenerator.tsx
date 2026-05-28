@@ -269,6 +269,7 @@ FINAL REMINDER: TONE is your #1 directive. Apply it identically to option_1/2/3.
         }
         setLiResult(li);
       }
+      recordGeneration("caption");
     } catch (err: any) {
       setError(err.message || "Something went wrong.");
     } finally {
@@ -472,6 +473,7 @@ FINAL REMINDER: TONE is your #1 directive. Apply it identically to option_1/2/3.
             </>
           )}
         </Button>
+        <GenerationMeter kind="caption" />
       </div>
 
       {/* Loading skeleton */}
